@@ -42,7 +42,8 @@ body {
 
 #discussion {
     margin: 0px;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
     min-height: 40px;
 }
 
@@ -55,6 +56,14 @@ div {
     position: relative;
     margin:0;
     padding:0;
+}
+
+hr {
+    border-top: 1px solid var(--color);
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+    margin: 50px 0px 50px 0px;
 }
 
 img {
@@ -303,6 +312,7 @@ dd { margin-top: 15px; }
          width="100%"
          viewbox="-50 -20 100 40"
          preserveAspectRatio="none"
+         transform="scale(0,1)"
         >
             <defs>
                 
@@ -360,7 +370,7 @@ dd { margin-top: 15px; }
         <p>
             In this scene, <i>E</i>&nbsp;=&nbsp;m<i>c</i><sup>2</sup>&nbsp;
            
-            and you ought to recognize that the letter&nbsp;<i>c</i>
+            and you probably recognize that the letter&nbsp;<i>c</i>
             in that equation
             refers to a <i>speed</i>; specifically,
             the speed of light.
@@ -633,7 +643,7 @@ dd { margin-top: 15px; }
         </p>
         
         <p>
-            Again, the masses injest the grid, and turn
+            Again, the masses ingest the grid, and turn
             it into more mass - this consumption causes
             the grid to warp.
             Eventually, the distortion forms a very strong
@@ -664,6 +674,8 @@ dd { margin-top: 15px; }
             surrounding grid-space.
         </p>
         </div>
+        
+        <hr>
         
         <div id="fabric">
         <p>
@@ -701,8 +713,8 @@ dd { margin-top: 15px; }
             the sheet [don't tear the sheet! you'll get
             in trouble], your hands will start getting
             closer to eachother until the two wads of
-            fabric you're both crunching up touch,
-            and become one big ball.
+            fabric you're both crunching up touch one another,
+            and become a single big ball.
             <br><br>
             Again, there is no force pulling the two things
             together - the 'pulling force' is the wadding
@@ -719,7 +731,7 @@ dd { margin-top: 15px; }
             [Note that this animation does not show the
             part where the masses start getting closer
             to eachother - though it could, ofcourse, do
-            that from the same calculation; it's just
+            that from the same calculation; it's simply
             intended to emphasize, for now, the
             grid-becoming-mass portion of what's happening.
             <br><br>
@@ -731,6 +743,8 @@ dd { margin-top: 15px; }
             the 'centers of mass' of each object.]
         </p>
         </div>
+        
+        <hr>
         
         <div id="boxing">
         
@@ -805,15 +819,15 @@ dd { margin-top: 15px; }
             side of the equation.
             <br><br>
             
-            Initially, the <i>mass</i> realm is completely empty;
+            Initially, the mass-realm is completely empty;
             there is NOTHING in it - no length or
-            width or height or mass.  At first, the mass realm
+            width or height or mass.  At first, the mass-realm
             doesn't even <i>exist</i> because it doesn't
             even have the time it would need in order to exist.
             <br><br>
             
-            In the beginning of the scene, the <i>Energy</i>
-            realm exists. It has a grid laid out over it;
+            In the beginning of the scene, the <i>energy-realm</i>
+            exists. It has a grid laid out over it;
             time and energy are spread throughout the space.
             That particular realm is teaming with energy
             and time, and all of that is contained in
@@ -821,11 +835,11 @@ dd { margin-top: 15px; }
             a grided-plane.
             <br><br>
             
-            As the grid gets injested, things begin to
-            'transfer' into the <i>mass</i> realm.
+            As the grid gets ingested, things begin to
+            'transfer' into the mass-realm.
             Things from the <i>Energy</i> side of the
             equation begin projecting into the
-            <i>mass</i> realm...
+            mass-realm...
             <p style="width:100%;text-align:center;">
             <img src="intersectionMass.svg"
             style="width:300px;">
@@ -843,11 +857,73 @@ dd { margin-top: 15px; }
             <br><br>
             This happens with every mass in the scene.
         </p>
+        
+        <p>
+            It would either be confusing or impractical
+            to attempt to show two different three-dimensional
+            realities intersecting eachother at right angles,
+            which is why they were reduced to planes for
+            this example.
+        </p>
+        </div>
+        
+        <hr>
+        
+        <div id="projection">
+            
+            In this scene, the masses are very approximately
+            circles - this is the result of projecting every
+            digested grid-point out into the mass-realm
+            at the angle to its origin.
+            <br><br>
+            That is, the coordinate-locations of the masses
+            begin to consume
+            grid-lines, which causes the apparent distortion of
+            the grid as all the grid-points gradually approach
+            the location of the mass.
+            Once a point from the grid gets fully
+            drawn into a particular mass's location, that point
+            is then transfered to the mass-realm at a coordinate
+            along a vector that is in the direction of the
+            grid-point's original theta from the mass's perspective.
+            <br><br>
+            A line is drawn from the mass's location to that point;
+            the collection of all such lines produces what - at
+            this resolution - is visually indistinguishable from
+            a circle.
+            <br><br>
+            Again, the masses are not masses - they are conceptual
+            locations, indicated by coordinates, that consume
+            the grid in all directions, then spit it back out
+            into the mass-realm.  When those lines get projected
+            out into the other side of the equation, that takes
+            the shape of a circle.
+            
         </div>
         
         <div id="emergency">
             
+            <p>
+            The grid does not warp to accomodate the mass.
+            The masses do not distort the grid with their presence.
+            The objects are not drawn towards eachother.
+            There is no gravity.
+            There are no objects.
+            </p>
+            
+            <p>
+            Locations consume the grid in every
+            direction, appearing to distort the grid.
+            Energy thrusts through to another plane,
+            appearing to form objects.
+            Consumption of the grid eliminates the
+            space between objects, appearing to draw
+            them together.
+                
+            </p>
+            
         </div>
+
         
         <p class="addendum">
         </p>
@@ -883,12 +959,12 @@ new Date() < new Date('2023-10-13') &&
         
         const cssProps = {
             'line-width' : 0.4,
-            'line-color' : 'hsl(48,100%,88%)',
+            'line-color' : 'hsla(48,100%,88%,1)',
             'axis-width' : 0.6,
             'axis-color' : '#e90',
-            'mass-color' : '#e90',
-            'mass-stroke' : '#c70',
-            'mass-line-color' : 'purple'
+            'mass-color' : 'rgba(255,165,0,0.8)', //'#e90',
+            'mass-stroke' : 'rgba(204,119,0,1.0)',//'#c70',
+            'mass-line-color' : '#e90'
         };
         
         const aniStall = 10;
@@ -897,8 +973,6 @@ new Date() < new Date('2023-10-13') &&
         const useDots = false;
         const aniMass = false;
     
-        const bigG = 1;
-        
         let masses = [
             // equilateral {
             //[ 0, -12, 5, 0],
@@ -929,7 +1003,7 @@ new Date() < new Date('2023-10-13') &&
         const slide0 = document.getElementById('slide0' );
         slide0.disabled = true;
     
-        let allPts = (new Array(1 + (2 * ydim))).fill(0);
+        let xPts = (new Array(1 + (2 * ydim))).fill(0);
         let yPts = [];
         
         let xlineObjs = [];
@@ -966,8 +1040,7 @@ new Date() < new Date('2023-10-13') &&
                 
                 let dist = getDist(masses[i], this);
                 
-                this.acc[i] = dist === 0 ? 0 : bigG / (dist * dist);
-                //this.acc[i] = dist === 0 ? 0 : ((1/(20*i+1))*bigG) / (dist * dist);
+                this.acc[i] = dist === 0 ? 0 : 1 / (dist * dist);
                 
                 this.oTheta[i] = Math.atan2(
                     this.oy - masses[i].y,
@@ -1024,7 +1097,7 @@ new Date() < new Date('2023-10-13') &&
                     this.rendX = masses[i].x;
                     this.rendY = masses[i].y;
                     
-                    //masses[i].addNegPoint(this.oTheta[i], count);
+                    masses[i].addNegPoint(this.oTheta[i], count);
                     
                     break;
                     
@@ -1046,7 +1119,7 @@ new Date() < new Date('2023-10-13') &&
             
         }
         
-        Line.prototype.drawLine = function (num) {
+        Line.prototype.drawLine = function (num = 0) {
             this.obj.setAttribute('d', this.paths[num] || 'M0 0Z');
         };
         
@@ -1066,7 +1139,7 @@ new Date() < new Date('2023-10-13') &&
             this.obj = document.createElementNS(NS, 'circle');
             this.obj.setAttribute('cx', x);
             this.obj.setAttribute('cy', y);
-            this.obj.setAttribute('r', r);
+            this.obj.setAttribute('r', 0);
             this.obj.classList.add('mass');
             
             this.line = document.createElementNS(NS, 'path');
@@ -1076,8 +1149,8 @@ new Date() < new Date('2023-10-13') &&
                 this.obj.innerHTML = '<animate attributeName="stroke-width" begin="0s" dur="0.5s" repeatCount="indefinite" from="0" to="8"/>';
             }
     
-            massgroup.appendChild(this.obj);
             massgroup.appendChild(this.line);
+            massgroup.appendChild(this.obj);
     
         }
     
@@ -1088,15 +1161,12 @@ new Date() < new Date('2023-10-13') &&
         
         Mass.prototype.addNegPoint = function (theta, i) {
             
-            return;
-            
             let r = i / valScale < this.off ?
                 0 : this.set * (i / valScale - this.off);
                 
             this.d[i] += 'M'+ this.ox +' '+ this.oy +' ';
-            this.d[i] += 'l'+ r * Math.cos(theta) +
-                         ' '+ r * Math.sin(theta) +' ';
-            
+            this.d[i] += 'l'+ r * Math.cos(theta) * valScale +
+                         ' '+ r * Math.sin(theta) * valScale +' ';
         };
         
         Mass.prototype.recalc = function (val) {
@@ -1106,12 +1176,10 @@ new Date() < new Date('2023-10-13') &&
                 0 : this.set * (val / valScale - this.off)
             ));
             
-            /*
             this.line.setAttribute(
                 'd',
                 this.d.slice(0,count).join('')
             );
-            */
     
         };
 
@@ -1132,7 +1200,7 @@ new Date() < new Date('2023-10-13') &&
             }
         
             // loop through all the points ...
-            for (const L of allPts) {
+            for (const L of xPts) {
         
                 // reset them
                 for (const P of L) {
@@ -1143,7 +1211,7 @@ new Date() < new Date('2023-10-13') &&
         
                     for (let i in masses) {
                         let dist = getDist(masses[i], P);
-                        P.acc[i] = dist === 0 ? 0 : bigG / (dist * dist);
+                        P.acc[i] = dist === 0 ? 0 : 1 / (dist * dist);
                     }
                     
                     P.threshold = Infinity;
@@ -1156,7 +1224,7 @@ new Date() < new Date('2023-10-13') &&
         
         function createXlines () {
             
-            for (let L of allPts) {
+            for (let L of xPts) {
                 
                 let tmpL = document.createElementNS(NS, 'path');
     
@@ -1176,8 +1244,8 @@ new Date() < new Date('2023-10-13') &&
     
         function createYlines () {
     
-            for (let L of allPts[0]) {
-    
+            for (let L of xPts[0]) {
+                
                 let tmpL = document.createElementNS(NS, 'path');
     
                 tmpL.classList.add('gridline', 'yline');
@@ -1201,7 +1269,7 @@ new Date() < new Date('2023-10-13') &&
         function fillXlines () {
     
             // loop through every line in the points array
-            for (const [n, L] of allPts.entries()) {
+            for (const [n, L] of xPts.entries()) {
             
                 // start the path at the first point
                 let tmpD = 'M' + L[0].makeSVG();
@@ -1212,10 +1280,7 @@ new Date() < new Date('2023-10-13') &&
                 }
                 
                 // set the path for the line's object
-                //xlineObjs[n].setAttribute('d', tmpD);
-                //xlineObjs[n].obj.setAttribute('d', tmpD);
                 xlineObjs[n].paths.push(tmpD);
-                //xlineObjs[n].drawLine(count);
             
             }
 
@@ -1241,7 +1306,6 @@ new Date() < new Date('2023-10-13') &&
                 }
                 
                 ylineObjs[n].paths.push(tmpD);
-                ylineObjs[n].drawLine(count);
                 
             }
     
@@ -1253,26 +1317,26 @@ new Date() < new Date('2023-10-13') &&
             if (count < 101) {
             
                 // recalc all the points
-                for (let AP of allPts) {for (let p of AP) { p.recalc(); }}
+                for (let AP of xPts) {for (let p of AP) { p.recalc(); }}
                 
-                // DEBUGG
                 // generate the path for all the lines
                 fillXlines();
                 fillYlines();
+                
+                // display percent complete
                 gravLox.innerHTML = (count) + '%';
                 
                 // increment the count
                 count++;
                
-                /*
+                // scale the grid as a vizual loader
                 svgGrid.setAttribute(
                     'transform',
                     'scale(' + count /100 + ', 1)'
                 );
-                */
                 
-                // call itself
-                setTimeout(loader,0);
+                // total recall
+                setTimeout(loader, 0);
                 
             } else { // otherwise ...
             
@@ -1281,9 +1345,6 @@ new Date() < new Date('2023-10-13') &&
                 
                 // reset the gravlox logo
                 gravLox.innerHTML = appName;
-                
-                // reset the grid lines
-                //update();
                 
                 // load the listeners
                 for (const [x, y, z] of lizzers) {
@@ -1312,9 +1373,6 @@ new Date() < new Date('2023-10-13') &&
             
             // recalc the masses
             masses.forEach(M => M.recalc(count * valScale));
-    
-            // recalc the grid points
-            //for (let AP of allPts) { for (let p of AP) { p.recalc();}}
     
             // draw the x-lines
             drawXlines(count);
@@ -1535,11 +1593,11 @@ new Date() < new Date('2023-10-13') &&
         masses = masses.map(m => new Mass(...m));
         //}
     
-        // fill the points array {
-        for (let L in allPts) {
+        // fill the points arrays {
+        for (let L in xPts) {
             
             // zero-fill twice the x-dimension plus one for axis
-            allPts[L] = (new Array(1 + (2 * xdim))).fill(0)
+            xPts[L] = (new Array(1 + (2 * xdim))).fill(0)
             
             // remap the zeros to points at apropos coords
             .map((p, i) =>
@@ -1548,13 +1606,13 @@ new Date() < new Date('2023-10-13') &&
             
         }
     
-        // then rotate that matrix for y-lines
-        for (let L in allPts[0]) {
+        // then rotate that ponts matrix for y-lines
+        for (let L in xPts[0]) {
     
             yPts[L] = [];
     
-            for (let i in allPts) {
-                yPts[L].push(allPts[i][L]);
+            for (let i in xPts) {
+                yPts[L].push(xPts[i][L]);
             }
     
         }
@@ -1567,13 +1625,14 @@ new Date() < new Date('2023-10-13') &&
         fillYlines();
         //}
     
-        // calculate all the steps {
-        setTimeout(loader, 0);
-        //}
-
         // draw the scene {
         update();
         //}
+        
+        // run the loader to calculate all the steps {
+        setTimeout(loader, 0);
+        //}
+
 
 // expire msg {
     
