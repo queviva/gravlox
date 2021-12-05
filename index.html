@@ -213,7 +213,10 @@ svg {
     fill: none;
     pointer-events: stroke;
     vector-effect: non-scaling-stroke;
-    xxxtransition: d linear 1s;
+    xxxstroke-dasharray: 10 4;
+    xxxstroke-dashoffset: 0;
+    xxxanimation: move-grid-line 0.5s linear infinite;
+    transition: opacity 1s linear;
 }
 
 .xlineDots {
@@ -227,7 +230,6 @@ svg {
 }
 
 .yline {
-
     
 }
 
@@ -250,6 +252,10 @@ svg {
     stroke: none;
 }
 
+#massouts {
+    transition: opacity 1s linear;
+}
+
 .massout {
     fill: none;
     stroke : var(--mass-stroke);
@@ -262,7 +268,20 @@ svg {
     fill: none;
     stroke: var(--mass-line-color);
     stroke-width: var(--mass-line-width);
-    
+    xxxstroke-dasharray: 5 1;
+    xxxstroke-dashoffset: 0;
+    xxxanimation: move-mass-line 2s linear infinite;
+    transition: opacity 1s linear;
+}
+
+@keyframes move-mass-line {
+    0% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -6; }
+}
+
+@keyframes move-grid-line {
+    0% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -14; }
 }
 
 /*possibly a portrait mobi-fone*/
@@ -339,18 +358,25 @@ dd { margin-top: 15px; }
                     ></circle>
                 </marker>
         
+                <g id="massdots"></g>
+                
+                <mask id="hole">
+                    <rect
+                    x="-50" y="-20"
+                    width="100%" height="100%" fill="white"/>
+                    <use href="#massdots"/>
+                </mask>
                 
             </defs>
             
-            <circle id="loadball" cx="0" cy="0" r="1"
-            transform="scale(0,0)"></circle>
+            <circle id="loadball" cx="0" cy="0" r="1" transform="scale(0,0)"/>
             
-            <g id=gridgroup transform="scale(0,0)">
+            <g id=gridgroup transform="scale(0,0)" mask="url(#hole)">
                 <g id="xgridlines"></g>
                 <g id="ygridlines"></g>
             </g>
             
-            <g id="massdots"></g>
+            <!--g id="massdots"></g-->
             
             <g id="massgroup">
                 <g id="xmasslines"></g>
@@ -530,6 +556,8 @@ dd { margin-top: 15px; }
         </p>
         
         </div>
+        
+        <hr>
         
         <div id="existing">
         <p>
@@ -723,13 +751,18 @@ dd { margin-top: 15px; }
             That is, since you're both pulling the sheet
             into your hands, the part of the sheet that's
             between your two hands is getting pulled into
-            both of your hands; unless you <i>tear</i>
+            both of your hands at once; unless you <i>tear</i>
             the sheet [don't tear the sheet! you'll get
             in trouble], your hands will start getting
             closer to eachother until the two wads of
             fabric you're both crunching up touch one another,
             and become a single big ball.
+            
+            If we're both eating the same string of spaghetti,
+            from opposite sides, either the spaghetti is going
+            to snap, or we're going to kiss.
             <br><br>
+            
             Again, there is no force pulling the two things
             together - the 'pulling force' is the wadding
             up of the sheet into a ball.  It's the
@@ -753,7 +786,7 @@ dd { margin-top: 15px; }
             are 'attracted' in <i>many</i> directions
             at once - along every different line in the
             grid, in fact - it's just that a preponderance
-            of grid-lines have been concentrated between
+            of grid-lines has been concentrated between
             the 'centers of mass' of each object.]
         </p>
         </div>
@@ -978,24 +1011,24 @@ new Date() < new Date('2023-10-13') &&
         const useDots = false;
         const aniMass = false;
         
-        const massLineVelocity = 0.08; // in pixels-per-timestep
+        const massLineVelocity = 0.001; // in pixels-per-timestep
         
         const cssProps = {
             'line-width' : 0.4,
             'line-color' : 'hsla(48,100%,88%,1.0)',
             'axis-width' : 0.6,
             'axis-color' : 'rgba(255,165,0,1.0)',
-            'mass-color' : 'rgba(255,165,0,1.0)',
-            'mass-stroke' : 'rgba(204,119,0,1.0)',
+            'mass-color' : 'black',//'rgba(255,165,0,1.0)',
+            'mass-stroke' : 'rgba(255,165,0,1.0)',//'rgba(204,119,0,1.0)',
             'mass-line-width' : 0.1,
-            'mass-line-color' : 'hsla(48,100%,88%,0.3)',
+            'mass-line-color' : 'rgba(255,165,0,1.0)',
             'load-ball-color' : 'rgba(255,165,0,1.0)',
             'load-ball-stroke' : 'rgba(204,119,0,1.0)',
         };
         
         let masses = [
             
-            //[int x, int y, int rad, int offset, bool animate]
+            //[int x, int y, int first_step]
             // equilateral {
             //[ 0, -12, 5, 0],
             //[-12,  4, 5, 0],
@@ -1003,9 +1036,11 @@ new Date() < new Date('2023-10-13') &&
             // }
             
             // [0, 0, 12, 0]
-             [-23, -8, 5, 5]
-            ,[ 26,  8, 3, 5]
-            //,[ 32, -10, 2, 0]
+            
+             [-24,  -8,  0]
+            ,[ 26,   8, 45]
+            ,[-40,  10, 90]
+            //,[ 32, -10, 85]
         ];
     
         //}
@@ -1035,6 +1070,8 @@ new Date() < new Date('2023-10-13') &&
         let xlineObjs = [];
         let ylineObjs = [];
         
+        let merms = [];
+        
         //}
     
         // methods {
@@ -1051,47 +1088,58 @@ new Date() < new Date('2023-10-13') &&
         
         function Point (x, y) {
     
-            this.ox = x;
-            this.oy = y;
-            this.thetas = [];
             this.x = x;
             this.y = y;
             
+            this.thetas = [];
             this.acc = [];
             
             this.mem = new Array(100);
-            this.mem[0] = { x: this.x, y: this.y };
+            this.mem[0] = { x: x, y: y };
             
             this.threshold = Infinity;
+            
             this.transPoint = {
+                mdex: null,
                 x: null,
                 y: null,
                 cos: null,
                 sin: null
             };
     
-            for (let i in masses) {
-                
-                let dist = getDist(masses[i], this);
-                
-                this.acc[i] = dist === 0 ? 0 : 1 / (dist * dist);
-                
-                this.thetas[i] = Math.atan2(
-                    this.oy - masses[i].y,
-                    this.ox - masses[i].x
-                );
-                
-            }
-    
         }
         
+        Point.prototype.addAcc = function (m, step) {
+        
+            let dist = getDist(m, this);
+        
+            if (dist === 0 && m.first === step) {
+                this.mem.fill({ x: this.x, y: this.y }, step);
+                this.acc[m.dex] = 0;
+                return;
+            }
+        
+            this.acc[m.dex] = 1 / (dist * dist);
+        
+            this.thetas[m.dex] = Math.atan2(
+                this.y - m.y,
+                this.x - m.x
+            );
+            
+        };
+        
         Point.prototype.recalc = function (step = 0) {
+            
+            // if this step is already calculated skip out
+            if (this.mem[step]) { return; }
             
             // if this point has already transitioned realms ...
             if (step > this.threshold) {
                 
                 // compute the distance to travel
-                let D = massLineVelocity * (step - this.threshold);
+                let D = massLineVelocity *
+                       (step - this.threshold) *
+                       (step - this.threshold);
                 
                 // update the mass-realm coords
                 this.x = this.transPoint.x + (this.transPoint.cos * D);
@@ -1105,28 +1153,31 @@ new Date() < new Date('2023-10-13') &&
                 
             }
             
-            // otherwise, adjust the change in time
+            // otherwise, scale the change in time
             let dT = step * valScale;
             
             // begin amassing change in position
             let dx = 0;
             let dy = 0;
     
-            // loop through every mass
-            for (let i in masses) {
+            // loop through every emerged mass
+            for (let m of merms) {
                 
                 // figure out the angle to that mass at this step
                 let theta = Math.atan2(
-                    masses[i].y - this.y,
-                    masses[i].x - this.x
+                    m.y - this.y,
+                    m.x - this.x
                 );
                 
+                // adjust the change in time
+                let adj = (step - m.first) * valScale;
+                
                 // compute the distance to travel
-                let D = this.acc[i] * dT * dT;
+                let D = this.acc[m.dex] * adj * adj;
                 
                 // compound the position deltas
-                dx += D * Math.cos(theta);
-                dy += D * Math.sin(theta);
+                dx += D * Math.cos(theta) || 0;
+                dy += D * Math.sin(theta) || 0;
                 
             }
     
@@ -1137,26 +1188,26 @@ new Date() < new Date('2023-10-13') &&
             // add them to the memory for this step
             this.mem[step] = { x: this.x, y: this.y };
             
-            // loop through all masses ...
-            for (let i in masses) {
+            // loop through all emerged masses ...
+            for (let m of merms) {
                 
                 // if this point has transitioned realms ...
-                if (Math.sqrt(dx*dx + dy*dy) >= getDist(masses[i], this)) {
+                if (Math.sqrt(dx*dx + dy*dy) >= getDist(m, this)) {
                     
                     // set the threshold to this step
                     this.threshold = step;
                     
                     // remember the transition-point info
                     this.transPoint = {
-                        index: i,
-                        x: masses[i].x,
-                        y: masses[i].y,
-                        cos: Math.cos(this.thetas[i]),
-                        sin: Math.sin(this.thetas[i])
+                        mdex: m.dex,
+                        x: m.x,
+                        y: m.y,
+                        cos: Math.cos(this.thetas[m.dex]),
+                        sin: Math.sin(this.thetas[m.dex])
                     };
                     
                     // overwrite the coords for this step
-                    this.mem[step] = { x: masses[i].x, y: masses[i].y };
+                    this.mem[step] = { x: m.x, y: m.y };
                     
                     // skip out
                     break;
@@ -1164,7 +1215,6 @@ new Date() < new Date('2023-10-13') &&
                 }
             }
             
-    
         };
         
         Point.prototype.makeSVG = function (step = 0) {
@@ -1183,7 +1233,8 @@ new Date() < new Date('2023-10-13') &&
             
             this.pts = pts;
             this.gridpaths = [];
-            this.masspaths = [];
+            //this.masspaths = [];
+            this.masspaths = new Array(numSteps + 1).fill('');
             
         }
         
@@ -1203,7 +1254,7 @@ new Date() < new Date('2023-10-13') &&
                                 ' ' + this.pts[i].transPoint.y;
                     
                     // while the next point is beyond the transition ...
-                    while (step > this.pts[i].threshold) {
+                    while (this.pts[i] && step > this.pts[i].threshold) {
                     
                         // put grid-line at transition point
                         tmpD += 'L' + this.pts[i].transPoint.x +
@@ -1217,12 +1268,11 @@ new Date() < new Date('2023-10-13') &&
                         
                     }
                     
+                    // close the path
+                    tmpMD += 'Z';
+                    
                     // add this path to the mass-path for this step
-                    if (this.masspaths[step] === undefined) {
-                        this.masspaths[step] = tmpMD;
-                    } else {
-                        this.masspaths[step] += tmpMD;
-                    }
+                    this.masspaths[step] += tmpMD;
                     
                     
                 } else { // otherwise ...
@@ -1247,13 +1297,18 @@ new Date() < new Date('2023-10-13') &&
         //}
         
         // Mass Object {
-        function Mass (x, y) {
+        
+        function Mass (dex, x, y, first = 0) {
             
             this.x = x;
             this.y = y;
+            
+            this.dex = dex;
+            this.first = first;
+            
             this.rads = [];
             
-            ['dot','out'].forEach(t => {
+            ['dot', 'out'].forEach(t => {
                 this[t] = document.createElementNS(NS, 'circle');
                 this[t].setAttribute('cx', x);
                 this[t].setAttribute('cy', y);
@@ -1268,15 +1323,18 @@ new Date() < new Date('2023-10-13') &&
     
         Mass.prototype.genPath = function (step = 0) {
             
-            // compute radius at this step
-            this.rads[step] = massLineVelocity * step;
+            // compute adjusted radius for this step
+            let adj = step < this.first ? 0 :
+                     (step - this.first - 2) < 0 ? 0 :
+                     (step - this.first - 2);
+                      
+            this.rads[step] = massLineVelocity * adj * adj;
             
         };
         
         Mass.prototype.drawPath = function (step = 0) {
             this.dot.setAttribute('r', this.rads[step]);
-            this.out.setAttribute(
-                'r',
+            this.out.setAttribute('r',
                 this.rads[step] - 0.2 < 0 ? 0 : this.rads[step] - 0.2
             );
         };
@@ -1386,6 +1444,37 @@ new Date() < new Date('2023-10-13') &&
                 
                 e.preventDefault();
                 
+                // DEBUGG
+                // toggle single line
+                if (gridgroup.getAttribute('mask') !== 'none') {
+                    
+                    gridgroup.setAttribute('mask', 'none');
+                    massouts.style.opacity = 0.0;
+                    
+                    [...xlineObjs, ...ylineObjs].forEach(L => {
+                        if (!L.gridobj.classList.contains('axisline')) {
+                            L.gridobj.style.opacity = 0.0;
+                            L.massobj.style.opacity = 0.0;
+                        }
+                    });
+                
+                
+                } else {
+                    
+                    gridgroup.setAttribute('mask', 'url(#hole)');
+                    massouts.style.opacity = 1.0;
+                    
+                    [...xlineObjs, ...ylineObjs].forEach(L => {
+                        if (!L.gridobj.classList.contains('axisline')) {
+                            L.gridobj.style.opacity = 1.0;
+                            L.massobj.style.opacity = 1.0;
+                        }
+                    });
+                }
+                
+                return;
+                
+                
                 // if animation is running ...
                 if (aniMaker.isLooping !== false) {
                     
@@ -1397,6 +1486,7 @@ new Date() < new Date('2023-10-13') &&
                 count = 0;
                 slide0.value = 0;
                 update();
+                
                 //removeLizzers();
                 //randReset();
                 //xlineObjs.forEach(L => L.paths = [])
@@ -1526,11 +1616,24 @@ new Date() < new Date('2023-10-13') &&
                 
                 // recalc the radius for all masses
                 masses.forEach(M => M.genPath(loadCount));
+                
+                // if any masses emerge at this step ...
+                masses.filter(m => m.first === loadCount).forEach(m => {
+                    
+                    // add them to every point
+                    for (let AP of xPts) { for (let p of AP) {
+                        p.addAcc(m, loadCount);
+                    }}
+                    
+                });
+                
+                // update the emerged masses list
+                merms = masses.filter(m => m.first <= loadCount);
     
                 // recalc all the points
-                for (let AP of xPts) {
-                    for (let p of AP) { p.recalc(loadCount); }
-                }
+                for (let AP of xPts) { for (let p of AP) {
+                    p.recalc(loadCount);
+                }}
                 
                 // generate the path for all the lines
                 xlineObjs.forEach(L => L.genPath(loadCount));
@@ -1549,6 +1652,8 @@ new Date() < new Date('2023-10-13') &&
                     'transform',
                     'scale(' + (1 - per) * 55 + ','+ (1 - per) * 55 +')'
                 );
+                
+                loadball.style.opacity = 1 - per * per;
                
                 // scale the grid as a vizual loader
                 gridgroup.setAttribute(
@@ -1587,6 +1692,9 @@ new Date() < new Date('2023-10-13') &&
                 // hide the loading ball
                 loadball.style.display = 'none';
                 
+                // try to free some memory
+                xPts = null;
+                yPts = null;
                 
             }
             
@@ -1604,7 +1712,7 @@ new Date() < new Date('2023-10-13') &&
         // }
         
         // create the masses {
-        masses = masses.map(m => new Mass(...m));
+        masses = masses.map((m, i) => new Mass(i, ...m));
         //}
             
         // fill the points arrays {
@@ -1695,7 +1803,6 @@ new Date() < new Date('2023-10-13') &&
 === undefined || (console.log('eXp!red'));
 
 // }
-
 
 </script>
 
