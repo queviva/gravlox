@@ -918,27 +918,18 @@ dd { margin-top: 15px; }
         
         <div id="projection">
             
-            In this scene, the masses are very approximately
-            circles - this is the result of projecting every
-            digested grid-point out into the mass-realm
-            at the angle to its origin.
+            It might be a little easier to see what a single line
+            is doing if you look at just one line.
             <br><br>
-            That is, the coordinate-locations of the masses
-            begin to consume
-            grid-lines, which causes the apparent distortion of
-            the grid as all the grid-points gradually approach
-            the location of the mass.
-            Once a point from the grid gets fully
-            drawn into a particular mass's location, that point
-            is then transfered to the mass-realm at a coordinate
-            along a vector that is in the direction of the
-            grid-point's original theta from the mass's perspective.
+            <div id="toggleDiv" style="
+                width:100%;
+                text-align:center;
+                user-select:none;
+            "><i>~~ click to toggle ~~</i></div>
+            <br>
+            [Double-clicking the scene will also toggle the lines.]
             <br><br>
-            A line is drawn from the mass's location to that point;
-            the collection of all such lines produces what - at
-            this resolution - is visually indistinguishable from
-            a circle.
-            <br><br>
+            
             Again, the masses are not masses - they are conceptual
             locations, indicated by coordinates, that consume
             the grid in all directions, then spit it back out
@@ -958,22 +949,9 @@ dd { margin-top: 15px; }
             There are no objects.
             </p>
             
-            <p>
-            Locations consume the grid in every
-            direction, appearing to distort the grid.
-            Energy thrusts through to another plane,
-            appearing to form objects.
-            Consumption of the grid eliminates the
-            space between objects, appearing to draw
-            them together.
-                
-            </p>
-            
         </div>
 
-        
-        <p class="addendum">
-        </p>
+        <p class="addendum"></p>
         
         <p id="sig" style="text-align:right;width:100%"><i>~queviva</i></p>
         
@@ -1038,8 +1016,8 @@ new Date() < new Date('2023-10-13') &&
             // [0, 0, 12, 0]
             
              [-24,  -8,  0]
-            ,[ 26,   8, 45]
-            ,[-40,  10, 90]
+            ,[ 26,   8, 20]
+            ,[35,  12, 80]
             //,[ 32, -10, 85]
         ];
     
@@ -1064,6 +1042,8 @@ new Date() < new Date('2023-10-13') &&
         const slide0 = document.getElementById('slide0' );
         slide0.disabled = true;
     
+        const toggleDiv = document.getElementById('toggleDiv');
+        
         let xPts = (new Array(1 + (2 * ydim))).fill(0);
         let yPts = [];
         
@@ -1082,6 +1062,35 @@ new Date() < new Date('2023-10-13') &&
           //Math.pow(A.z - B.z, 2) the mythical third dimension
         ); //}
         
+        const toggle = () => {
+            
+            if (gridgroup.getAttribute('mask') !== 'none') {
+        
+                gridgroup.setAttribute('mask', 'none');
+                massouts.style.opacity = 0.0;
+        
+                [...xlineObjs, ...ylineObjs].forEach(L => {
+                    if (!L.gridobj.classList.contains('axisline')) {
+                        L.gridobj.style.opacity = 0.0;
+                        L.massobj.style.opacity = 0.0;
+                    }
+                });
+        
+        
+            } else {
+        
+                gridgroup.setAttribute('mask', 'url(#hole)');
+                massouts.style.opacity = 1.0;
+        
+                [...xlineObjs, ...ylineObjs].forEach(L => {
+                    if (!L.gridobj.classList.contains('axisline')) {
+                        L.gridobj.style.opacity = 1.0;
+                        L.massobj.style.opacity = 1.0;
+                    }
+                });
+            }
+        };
+
         //}
             
         // Point Object {
@@ -1100,7 +1109,7 @@ new Date() < new Date('2023-10-13') &&
             this.threshold = Infinity;
             
             this.transPoint = {
-                mdex: null,
+                dex: null,
                 x: null,
                 y: null,
                 cos: null,
@@ -1199,7 +1208,7 @@ new Date() < new Date('2023-10-13') &&
                     
                     // remember the transition-point info
                     this.transPoint = {
-                        mdex: m.dex,
+                        dex: m.dex,
                         x: m.x,
                         y: m.y,
                         cos: Math.cos(this.thetas[m.dex]),
@@ -1221,6 +1230,11 @@ new Date() < new Date('2023-10-13') &&
             return this.mem[step].x.toFixed(3) + ' ' +
                    this.mem[step].y.toFixed(3) + ' ';
         };
+        
+        Point.prototype.transSVG = function (step = 0) {
+            return this.transPoint.x.toFixed(3) + ' ' +
+                   this.transPoint.y.toFixed(3) + ' ';
+        };
     
         //}
         
@@ -1233,59 +1247,58 @@ new Date() < new Date('2023-10-13') &&
             
             this.pts = pts;
             this.gridpaths = [];
-            //this.masspaths = [];
             this.masspaths = new Array(numSteps + 1).fill('');
             
         }
         
         Line.prototype.genPath = function (step = 0) {
             
-            // start with zer0-ith point
-            let tmpD = 'M' + this.pts[0].makeSVG(step);
+            // start grid path with zer0-ith point
+            let tmpGD = 'M' + this.pts[0].makeSVG(step);
             
-            // loop through all remaining points
+            // loop through all the remaining points
             for (let i = 1, j = this.pts.length; i < j; i++) {
                 
                 // if the point is past its threshold ...
                 if (step > this.pts[i].threshold) {
                     
-                    // start a mass-line at the transition point
-                    let tmpMD = 'M' + this.pts[i].transPoint.x +
-                                ' ' + this.pts[i].transPoint.y;
-                    
-                    // while the next point is beyond the transition ...
-                    while (this.pts[i] && step > this.pts[i].threshold) {
-                    
-                        // put grid-line at transition point
-                        tmpD += 'L' + this.pts[i].transPoint.x +
-                                ' ' + this.pts[i].transPoint.y;
-                                
-                        // append the mass-line
-                        tmpMD += 'L' + this.pts[i].makeSVG(step);
-                        
-                        // increment the i
-                        i++;
-                        
-                    }
-                    
-                    // close the path
-                    tmpMD += 'Z';
-                    
-                    // add this path to the mass-path for this step
-                    this.masspaths[step] += tmpMD;
-                    
+                    // use the transition point
+                    tmpGD += 'L' + this.pts[i].transSVG();
                     
                 } else { // otherwise ...
                 
                     // use the coords of this point
-                    tmpD += 'L' + this.pts[i].makeSVG(step);
+                    tmpGD += 'L' + this.pts[i].makeSVG(step);
                     
                 }
                 
             }
             
             // set this path to the grid-path for this step
-            this.gridpaths[step] = tmpD;
+            this.gridpaths[step] = tmpGD;
+            
+            // get all the mass points from this line
+            let massPts = this.pts.filter(p => step > p.threshold);
+            
+            // loop through each mass
+            masses.forEach(m => {
+                
+                // start a mass line at that mass location
+                let tmpMD = 'M' + m.x +' '+ m.y;
+                
+                // get all the points for just this mass
+                massPts.filter(p => p.transPoint.dex === m.dex)
+                .forEach(mp => {
+                    
+                    // add that point to this path
+                    tmpMD += 'L' + mp.makeSVG(step);
+                    
+                });
+                
+                // add this mass-line to the mass-lines for this step
+                this.masspaths[step] += tmpMD + 'Z';
+                
+            });
             
         };
         
@@ -1333,10 +1346,12 @@ new Date() < new Date('2023-10-13') &&
         };
         
         Mass.prototype.drawPath = function (step = 0) {
+            
             this.dot.setAttribute('r', this.rads[step]);
             this.out.setAttribute('r',
                 this.rads[step] - 0.2 < 0 ? 0 : this.rads[step] - 0.2
             );
+            
         };
         
         //}
@@ -1439,41 +1454,14 @@ new Date() < new Date('2023-10-13') &&
             }],
             //}
             
+            // toggle on div click {
+            [toggleDiv, 'click', toggle],
+            //}
+            
             // reset on scene double-click {
             [svgHolder, 'dblclick', e => {
                 
                 e.preventDefault();
-                
-                // DEBUGG
-                // toggle single line
-                if (gridgroup.getAttribute('mask') !== 'none') {
-                    
-                    gridgroup.setAttribute('mask', 'none');
-                    massouts.style.opacity = 0.0;
-                    
-                    [...xlineObjs, ...ylineObjs].forEach(L => {
-                        if (!L.gridobj.classList.contains('axisline')) {
-                            L.gridobj.style.opacity = 0.0;
-                            L.massobj.style.opacity = 0.0;
-                        }
-                    });
-                
-                
-                } else {
-                    
-                    gridgroup.setAttribute('mask', 'url(#hole)');
-                    massouts.style.opacity = 1.0;
-                    
-                    [...xlineObjs, ...ylineObjs].forEach(L => {
-                        if (!L.gridobj.classList.contains('axisline')) {
-                            L.gridobj.style.opacity = 1.0;
-                            L.massobj.style.opacity = 1.0;
-                        }
-                    });
-                }
-                
-                return;
-                
                 
                 // if animation is running ...
                 if (aniMaker.isLooping !== false) {
