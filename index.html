@@ -169,6 +169,7 @@ svg {
     --dot-color: var(--color);
     --mass-color: #e90;
     --mass-stroke: #c70;
+    --mass-stroke-width: 5;
     --mass-line-width: 0.4;
     --mass-line-color: purple;
     --load-ball-color: #e90;
@@ -242,7 +243,7 @@ svg {
 
 #loadball {
     fill: var(--load-ball-color);
-    stroke : var(--mass-stroke);
+    stroke : var(--load-ball-stroke);
     stroke-width: 10;
     vector-effect: non-scaling-stroke;
 }
@@ -259,15 +260,15 @@ svg {
 .massout {
     fill: none;
     stroke : var(--mass-stroke);
-    stroke-width: 5;
+    stroke-width: var(--mass-stroke-width);
     vector-effect: non-scaling-stroke;
 }
 
 .massline {
-    
     fill: none;
     stroke: var(--mass-line-color);
     stroke-width: var(--mass-line-width);
+    vector-effect: non-scaling-stroke;
     xxxstroke-dasharray: 5 1;
     xxxstroke-dashoffset: 0;
     xxxanimation: move-mass-line 2s linear infinite;
@@ -363,20 +364,18 @@ dd { margin-top: 15px; }
                 <mask id="hole">
                     <rect
                     x="-50" y="-20"
-                    width="100%" height="100%" fill="white"/>
-                    <use href="#massdots"/>
+                    width="100%" height="100%" fill="white" />
+                    <use href="#massdots" />
                 </mask>
                 
             </defs>
             
             <circle id="loadball" cx="0" cy="0" r="1" transform="scale(0,0)"/>
             
-            <g id=gridgroup transform="scale(0,0)" mask="url(#hole)">
+            <g id=gridgroup mask="url(#hole)">
                 <g id="xgridlines"></g>
                 <g id="ygridlines"></g>
             </g>
-            
-            <!--g id="massdots"></g-->
             
             <g id="massgroup">
                 <g id="xmasslines"></g>
@@ -766,8 +765,8 @@ dd { margin-top: 15px; }
             Again, there is no force pulling the two things
             together - the 'pulling force' is the wadding
             up of the sheet into a ball.  It's the
-            drawing up of the sheet into a ball that appears
-            to draw the two things together.
+            drawing up of the sheet into a your hand
+            that appears to draw the two things together.
             <br><br>
             <i>And</i> there aren't 'things' - there just
             appear to be things because the sheet is
@@ -924,8 +923,9 @@ dd { margin-top: 15px; }
             <div id="toggleDiv" style="
                 width:100%;
                 text-align:center;
+                font-style: italic;
                 user-select:none;
-            "><i>~~ click to toggle ~~</i></div>
+            ">~~~~~</div>
             <br>
             [Double-clicking the scene will also toggle the lines.]
             <br><br>
@@ -951,6 +951,8 @@ dd { margin-top: 15px; }
             
         </div>
 
+        <hr>
+        
         <p class="addendum"></p>
         
         <p id="sig" style="text-align:right;width:100%"><i>~queviva</i></p>
@@ -973,15 +975,18 @@ new Date() < new Date('2023-10-13') &&
       
 //}
     
+    
         ////////////////////////////////////////////////////////////
         
         // preferences {
         
         const appName = 'grav&middot\;LoX';
     
-        const size = 2;
-        const xdim = 70;
-        const ydim = 40;
+        let bigSmall = 1;
+        
+        let size = [8,  2,   2][bigSmall];
+        let xdim = [50, 50, 70][bigSmall];
+        let ydim = [20, 20, 40][bigSmall];
         
         const numSteps = 100;
         const aniStall = 10;
@@ -989,16 +994,17 @@ new Date() < new Date('2023-10-13') &&
         const useDots = false;
         const aniMass = false;
         
-        const massLineVelocity = 0.001; // in pixels-per-timestep
+        let speedOfMass = 0.001; // in pixels-per-timestep
         
         const cssProps = {
             'line-width' : 0.4,
             'line-color' : 'hsla(48,100%,88%,1.0)',
             'axis-width' : 0.6,
             'axis-color' : 'rgba(255,165,0,1.0)',
-            'mass-color' : 'black',//'rgba(255,165,0,1.0)',
+            'mass-color' : '#000',
             'mass-stroke' : 'rgba(255,165,0,1.0)',//'rgba(204,119,0,1.0)',
-            'mass-line-width' : 0.1,
+            'mass-stroke-width' : 3,
+            'mass-line-width' : 0.8,
             'mass-line-color' : 'rgba(255,165,0,1.0)',
             'load-ball-color' : 'rgba(255,165,0,1.0)',
             'load-ball-stroke' : 'rgba(204,119,0,1.0)',
@@ -1006,27 +1012,33 @@ new Date() < new Date('2023-10-13') &&
         
         let masses = [
             
-            //[int x, int y, int first_step]
+           //[int x, int y, int first_step]
+            
+             [-24,  -8,  0]
+            ,[ 26,   8, 20]
+            ,[-42,   3, 85]
+            
             // equilateral {
             //[ 0, -12, 5, 0],
             //[-12,  4, 5, 0],
             //[ 12,  4, 5, 0]
             // }
             
-            // [0, 0, 12, 0]
+            //[0, 0, 0]
             
-             [-24,  -8,  0]
-            ,[ 26,   8, 20]
-            ,[-35,  12, 80]
-            //,[ 32, -10, 85]
         ];
+        
+        const toggleMsgs = {
+            turnon  : '~~ click to show lines ~~',
+            turnoff : '~~ click to hide lines ~~',
+            disabled : '~~~~~'
+        };
     
         //}
     
         // references {
         
         let count = 0;
-        let loadCount = 0;
     
         const NS = 'http://www.w3.org/2000/svg';
         const svgHolder = document.getElementById('svgHolder');
@@ -1043,6 +1055,7 @@ new Date() < new Date('2023-10-13') &&
         slide0.disabled = true;
     
         const toggleDiv = document.getElementById('toggleDiv');
+        toggleDiv.innerHTML = toggleMsgs.disabled;
         
         let xPts = (new Array(1 + (2 * ydim))).fill(0);
         let yPts = [];
@@ -1054,46 +1067,23 @@ new Date() < new Date('2023-10-13') &&
         
         //}
     
-        // methods {
+        // utils {
         
         const getDist = (A, B) => Math.sqrt( //{
             Math.pow(A.x - B.x, 2) +
             Math.pow(A.y - B.y, 2) //+
           //Math.pow(A.z - B.z, 2) the mythical third dimension
         ); //}
-        
-        const toggle = () => {
-            
-            if (gridgroup.getAttribute('mask') !== 'none') {
-        
-                gridgroup.setAttribute('mask', 'none');
-                massouts.style.opacity = 0.0;
-        
-                [...xlineObjs, ...ylineObjs].forEach(L => {
-                    if (!L.gridobj.classList.contains('axisline')) {
-                        L.gridobj.style.opacity = 0.0;
-                        L.massobj.style.opacity = 0.0;
-                    }
-                });
-        
-        
-            } else {
-        
-                gridgroup.setAttribute('mask', 'url(#hole)');
-                massouts.style.opacity = 1.0;
-        
-                [...xlineObjs, ...ylineObjs].forEach(L => {
-                    if (!L.gridobj.classList.contains('axisline')) {
-                        L.gridobj.style.opacity = 1.0;
-                        L.massobj.style.opacity = 1.0;
-                    }
-                });
-            }
-        };
 
+        const randFrom = (...A) => // {
+            Math.min(...A) + Math.random() * (Math.max(...A) - Math.min(...A));
+            
+        const randInt = A => ~~(Math.random() * A);
+        //}
+        
         //}
             
-        // Point Object {
+        // point object {
         
         function Point (x, y) {
     
@@ -1103,8 +1093,8 @@ new Date() < new Date('2023-10-13') &&
             this.thetas = [];
             this.acc = [];
             
-            this.mem = new Array(100);
-            this.mem[0] = { x: x, y: y };
+            this.svgMem = new Array(numSteps + 1);
+            this.svgMem[0] = 'L' + x +' '+ y;
             
             this.threshold = Infinity;
             
@@ -1118,13 +1108,14 @@ new Date() < new Date('2023-10-13') &&
     
         }
         
-        Point.prototype.addAcc = function (m, step) {
+        Point.prototype.addMass = function (m, step) {
         
             let dist = getDist(m, this);
         
             if (dist === 0 && m.first === step) {
-                this.mem.fill({ x: this.x, y: this.y }, step);
+                this.svgMem.fill('L' + this.x +' '+ this.y);
                 this.acc[m.dex] = 0;
+                this.thetas[m.dex] = 0;
                 return;
             }
         
@@ -1140,13 +1131,13 @@ new Date() < new Date('2023-10-13') &&
         Point.prototype.recalc = function (step = 0) {
             
             // if this step is already calculated skip out
-            if (this.mem[step]) { return; }
+            if (this.svgMem[step]) { return; }
             
             // if this point has already transitioned realms ...
             if (step > this.threshold) {
                 
                 // compute the distance to travel
-                let D = massLineVelocity *
+                let D = speedOfMass *
                        (step - this.threshold) *
                        (step - this.threshold);
                 
@@ -1154,8 +1145,8 @@ new Date() < new Date('2023-10-13') &&
                 this.x = this.transPoint.x + (this.transPoint.cos * D);
                 this.y = this.transPoint.y + (this.transPoint.sin * D);
                 
-                // set the positions for this step
-                this.mem[step] = { x: this.x, y: this.y };
+                // set the svg for this step
+                this.svgMem[step] = 'L' + this.x +' '+ this.y;
                 
                 // and finish
                 return;
@@ -1194,8 +1185,9 @@ new Date() < new Date('2023-10-13') &&
             this.x += dx;
             this.y += dy;
             
-            // add them to the memory for this step
-            this.mem[step] = { x: this.x, y: this.y };
+            // set the svg for this step
+            this.svgMem[step] = 'L' + this.x.toFixed(3) +
+                                ' ' + this.y.toFixed(3);
             
             // loop through all emerged masses ...
             for (let m of merms) {
@@ -1212,11 +1204,12 @@ new Date() < new Date('2023-10-13') &&
                         x: m.x,
                         y: m.y,
                         cos: Math.cos(this.thetas[m.dex]),
-                        sin: Math.sin(this.thetas[m.dex])
+                        sin: Math.sin(this.thetas[m.dex]),
+                        svg: 'L' + m.x +' '+ m.y
                     };
                     
                     // overwrite the coords for this step
-                    this.mem[step] = { x: m.x, y: m.y };
+                    this.svgMem[step] = 'L' + m.x +' '+ m.y;
                     
                     // skip out
                     break;
@@ -1226,19 +1219,9 @@ new Date() < new Date('2023-10-13') &&
             
         };
         
-        Point.prototype.makeSVG = function (step = 0) {
-            return this.mem[step].x.toFixed(3) + ' ' +
-                   this.mem[step].y.toFixed(3) + ' ';
-        };
-        
-        Point.prototype.transSVG = function (step = 0) {
-            return this.transPoint.x.toFixed(3) + ' ' +
-                   this.transPoint.y.toFixed(3) + ' ';
-        };
-    
         //}
         
-        // Line Object {
+        // line object {
         
         function Line (gridobj, massobj, pts) {
             
@@ -1254,7 +1237,7 @@ new Date() < new Date('2023-10-13') &&
         Line.prototype.genPath = function (step = 0) {
             
             // start grid path with zer0-ith point
-            let tmpGD = 'M' + this.pts[0].makeSVG(step);
+            let tmpGD = this.pts[0].svgMem[step].replace('L', 'M');
             
             // loop through all the remaining points
             for (let i = 1, j = this.pts.length; i < j; i++) {
@@ -1263,18 +1246,21 @@ new Date() < new Date('2023-10-13') &&
                 if (step > this.pts[i].threshold) {
                     
                     // use the transition point
-                    tmpGD += 'L' + this.pts[i].transSVG();
+                    tmpGD += this.pts[i].transPoint.svg;
                     
                 } else { // otherwise ...
                 
                     // use the coords of this point
-                    tmpGD += 'L' + this.pts[i].makeSVG(step);
+                    tmpGD += this.pts[i].svgMem[step];
                     
                 }
                 
+                // DEBUGG - remove this memory point
+                this.pts[i].svgMem[step-1] = null;
+                
             }
             
-            // set this path to the grid-path for this step
+            // set that path to the grid-path for this step
             this.gridpaths[step] = tmpGD;
             
             // get all the mass points from this line
@@ -1291,7 +1277,7 @@ new Date() < new Date('2023-10-13') &&
                 .forEach(mp => {
                     
                     // add that point to this path
-                    tmpMD += 'L' + mp.makeSVG(step);
+                    tmpMD += mp.svgMem[step];
                     
                 });
                 
@@ -1309,7 +1295,7 @@ new Date() < new Date('2023-10-13') &&
         
         //}
         
-        // Mass Object {
+        // mass object {
         
         function Mass (dex, x, y, first = 0) {
             
@@ -1322,15 +1308,18 @@ new Date() < new Date('2023-10-13') &&
             this.rads = [];
             
             ['dot', 'out'].forEach(t => {
+                
                 this[t] = document.createElementNS(NS, 'circle');
-                this[t].setAttribute('cx', x);
-                this[t].setAttribute('cy', y);
-                this[t].setAttribute('r', 0);
+                
+                Object.entries({
+                    cx: x, cy: y, r: 0
+                }).forEach(a => this[t].setAttribute(a[0], a[1]));
+                
                 this[t].classList.add('mass'+t);
+                
+                window['mass' + t +'s'].appendChild(this[t])
+                
             });
-            
-            massdots.appendChild(this.dot);
-            massouts.appendChild(this.out);
     
         }
     
@@ -1341,7 +1330,7 @@ new Date() < new Date('2023-10-13') &&
                      (step - this.first - 2) < 0 ? 0 :
                      (step - this.first - 2);
                       
-            this.rads[step] = massLineVelocity * adj * adj;
+            this.rads[step] = speedOfMass* adj * adj;
             
         };
         
@@ -1356,145 +1345,292 @@ new Date() < new Date('2023-10-13') &&
         
         //}
         
-        // lizzers {
-        const lizzers = [
+        // animation object {
+        const aniMaker = new function () {
             
-            // increment on scroll {
-            [svgHolder, 'wheel', e => {
+            this.dir = 0;
+            this.stall = aniStall;
+            this.isLooping = false;
             
-                // stop the browser from going back-button-ward
-                e.preventDefault();
+            this.anim = () => {
                 
-                // if the scroll was big enough ...
-                if (Math.abs(e.deltaX) > 5) {
+                // if it still needs to run ...
+                if (
+                    (count < 100 && count > 0)
+                    ||
+                    (count === 0 && this.dir === 1)
+                    ||
+                    (count === 100 && this.dir === -1)
+                ) {
                     
-                    // if the animation is running ...
-                    if (aniMaker.isLooping !== false) {
-                        
-                        // stop the loop
-                        aniMaker.stop();
-                        
-                    }
+                    // call the increment
+                    incCount(this.dir);
                     
-                    // increment the count
-                    incCount(Math.sign(e.deltaX));
-                    
-                    // adjust slider
+                    // adjust the slider
                     slide0.value = count;
                     
+                    // redraw the scene
                     update(count);
-            
+        
+                    // recall the loop
+                    this.isLooping = setTimeout(this.anim, this.stall);
+        
+                } else { // otherwise ...
+                
+                    // stop the loop
+                    this.stop();
+        
                 }
+            };
             
+            this.start = (dir) => {
+                this.dir = dir;
+                this.anim();
+            };
+            
+            this.stop = () => {
+                clearTimeout(this.isLooping);
+                this.isLooping = false;
+            };
+            
+        };
+        //}
+        
+        // lizzer object {
+        const Liz = {
+            
+            lizzers : [
+                
+            // increment on scroll {
+            [svgHolder, 'wheel', e => {
+        
+                // stop the browser from going back-button-ward
+                e.preventDefault();
+        
+                // if the scroll was big enough ...
+                if (Math.abs(e.deltaX) > 5) {
+        
+                    // if the animation is running ...
+                    if (aniMaker.isLooping !== false) {
+        
+                        // stop the loop
+                        aniMaker.stop();
+        
+                    }
+        
+                    // increment the count
+                    incCount(Math.sign(e.deltaX));
+        
+                    // adjust slider
+                    slide0.value = count;
+        
+                    update(count);
+        
+                }
+        
             }],
             // }
-            
+        
             // increment on slide {
             [slide0, 'input', e => {
-                
+        
                 e.stopPropagation();
-                
+        
                 // if animation is running ...
                 if (aniMaker.isLooping !== false) {
-                    
+        
                     // stop the loop
                     aniMaker.stop();
-                    
+        
                 }
-                
+        
                 // increment by the value
                 count = parseInt(slide0.value, 10),
-                update(count);
-                
+                    update(count);
+        
             }],
             //}
-
+        
             // animate on slider div click {
             [slideDiv, 'click', e => {
-                
+        
                 // get the direction from the click
-                let dir = [1,-1][
+                let dir = [1, -1][
                     (100 *
-                    (e.clientX - slideDiv.offsetLeft - holder.offsetLeft)
-                    / slideDiv.offsetWidth
-                    > slide0.value) ?
+                        (e.clientX - slideDiv.offsetLeft - holder.offsetLeft) /
+                        slideDiv.offsetWidth >
+                        slide0.value) ?
                     0 : 1
                 ];
-                
+        
                 // if the animation is already running ...
                 if (aniMaker.isLooping !== false) {
-                    
+        
                     // and running in the OPPOSITE direction ...
                     if (dir !== aniMaker.dir) {
-                        
+        
                         // change the direction
                         aniMaker.dir = dir;
-                        
-                    } else { // otherwise it is running in the same dir ...
-                    
+        
+                    }
+                    else { // otherwise it is running in the same dir ...
+        
                         // so, stop the loop
                         aniMaker.stop()
-                        
+        
                     }
-                    
-                } else { // if the animation is not running ...
-                
+        
+                }
+                else { // if the animation is not running ...
+        
                     // start the animation
                     aniMaker.start(dir);
-                    
+        
                 }
-                
+        
             }],
             //}
-
+        
             // swallow clicks directly on thumb {
             [slide0, 'click', e => {
                 e.stopPropagation();
                 e.cancelBubble = true;
             }],
             //}
-            
-            // toggle on div click {
-            [toggleDiv, 'click', toggle],
-            //}
-            
-            // reset on scene double-click {
-            [svgHolder, 'dblclick', e => {
-                
-                e.preventDefault();
-                
-                // if animation is running ...
-                if (aniMaker.isLooping !== false) {
-                    
-                    // stop the loop
-                    aniMaker.stop();
-                    
+        
+            // toggle lines on div click {
+            [toggleDiv, 'click', e => {
+        
+                if (massouts.style.display !== 'none') {
+        
+                    toggleDiv.innerHTML = toggleMsgs.turnon;
+        
+                    toggleDiv.loop = setTimeout(() => {
+        
+                        clearTimeout(toggleDiv.loop);
+        
+                        massouts.style.display = 'none';
+                        massdots.childNodes.forEach(m =>
+                            m.style.fill = '#fff'
+                        );
+        
+                        [...xlineObjs, ...ylineObjs].forEach(L => {
+                            if (!L.gridobj.classList.contains('axisline')) {
+                                L.gridobj.style.display = 'none';
+                                L.massobj.style.display = 'none';
+                            }
+                        })
+                    }, 0);
+        
+        
                 }
-                
-                count = 0;
-                slide0.value = 0;
-                update();
-                
-                //removeLizzers();
-                //randReset();
-                //xlineObjs.forEach(L => L.paths = [])
-                //ylineObjs.forEach(L => L.paths = [])
-                //setTimeout(loader,0);
-                
+                else {
+        
+                    toggleDiv.innerHTML = toggleMsgs.turnoff;
+        
+                    toggleDiv.loop = setTimeout(() => {
+        
+                        clearTimeout(toggleDiv.loop);
+        
+                        massouts.style.display = 'block';
+                        massdots.childNodes.forEach(m =>
+                            m.style.fill = '#000'
+                        );
+        
+                        [...xlineObjs, ...ylineObjs].forEach(L => {
+                            if (!L.gridobj.classList.contains('axisline')) {
+                                L.gridobj.style.display = 'block';
+                                L.massobj.style.display = 'block';
+                            }
+                        })
+                    }, 0);
+        
+                }
             }],
             //}
-    
-        ];
-        //}
-                
-        function removeLizzers () {
+        
+            // reset on scene double-click {
+            [svgHolder, 'dblclick', e => {
+        
+                e.preventDefault();
+        
+                // stop animation if running {
+                if (aniMaker.isLooping !== false) {
+        
+                    // stop the loop
+                    aniMaker.stop();
+        
+                }
+                //}
+        
+                // reset the masses
+                resetMasses([[0, 0, 0]], 0.01);
+
+            }],
+            //}
+        
+            ],
             
-            for (const [x, y, z] of lizzers) {
-                x.removeEventListener(y, z, { passive: false });
+            add : function () {
+                for (const [x, y, z] of this.lizzers) {
+                    x.addEventListener(y, z, { passive: false });
+                }
+            },
+            
+            remove : function () {
+                for (const [x, y, z] of this.lizzers) {
+                    x.removeEventListener(y, z, { passive: false });
+                }
             }
             
-        }
+        };
+        //}
         
+        // mass resetter {
+        function resetMasses (m, uc) {
+                    
+                // change the masses {
+                masses = m;
+                //}
+        
+                // alter the universal constant {
+                speedOfMass = uc || speedOfMass;
+                //}
+                
+                // set the slider to zer0 {
+                slide0.value = 0;
+                //}
+        
+                // remove all svg lines and masses {
+                [
+                    xgridlines, ygridlines,
+                    xmasslines, ymasslines,
+                    massdots, massouts
+        
+                ].forEach(g => {
+        
+                    while (g.firstChild) {
+                        g.removeChild(g.firstChild);
+                    }
+        
+                });
+                //}
+        
+                // clear out the arrays {
+                xlineObjs = [];
+                ylineObjs = [];
+                merms = [];
+                xPts = (new Array(1 + (2 * ydim))).fill(0);
+                yPts = [];
+                //}
+        
+                // restart the universe ...
+                init();
+        
+        }
+        //}
+        
+        // scene updater {
         function update(step) {
             
             // draw the masses
@@ -1507,7 +1643,9 @@ new Date() < new Date('2023-10-13') &&
             ylineObjs.forEach(L => L.drawPath(step));
     
         }
+        //}
         
+        // count incrementer {
         function incCount(val) {
             
             // make a copy of the count
@@ -1525,116 +1663,94 @@ new Date() < new Date('2023-10-13') &&
             }
         
         }
-
-        const aniMaker = new function () {
-            
-            // javascript is NOT an object oriented language
-            // it can NOT 'bind this' no matter what they tell you
-            // you have to make a _this_ reference
-            const nm = this;
-            
-            // have no direction initially
-            nm.dir = 0;
-            
-            // set a pause for the loop
-            nm.stall = aniStall;
+        //}
         
-            // create loop thread var
-            nm.isLooping = false;
-        
-            // the animation function
-            nm.anim = dir => {
-                
-                // if it still needs to run ...
-                if (
-                    (count < 100 && count > 0)
-                    ||
-                    (count === 0 && dir === 1)
-                    ||
-                    (count === 100 && dir === -1)
-                ) {
-                    
-                    // call the increment
-                    incCount(nm.dir);
-                    
-                    // adjust the slider
-                    slide0.value = count;
-                    
-                    // redraw the scene
-                    update(count);
-        
-                    // recall the loop
-                    nm.isLooping = setTimeout(function() {
-                        nm.anim(nm.dir);
-                    }, nm.stall);
-        
-                }
-                // otherwise stop the loop
-                else {
-        
-                    clearTimeout(nm.isLooping);
-                    nm.isLooping = false;
-        
-                }
-        
-            }
-        
-            nm.start = dir => {
-            
-                clearTimeout(nm.isLooping);
-                nm.dir = dir;
-                this.anim(nm.dir);
-        
-            };
-        
-            nm.stop = () => {
-        
-                clearTimeout(nm.isLooping);
-                nm.isLooping = false;
-        
-            };
-        
-        }();
-        
-        // loader {
-        function loader () {
+        // mass and point loader {
+        function massPointLoader () {
             
             // if it still needs to load ...
-            if (loadCount < numSteps + 1) {
+            if (count < numSteps + 1) {
                 
                 // recalc the radius for all masses
-                masses.forEach(M => M.genPath(loadCount));
+                masses.forEach(M => M.genPath(count));
                 
                 // if any masses emerge at this step ...
-                masses.filter(m => m.first === loadCount).forEach(m => {
+                masses.filter(m => m.first === count).forEach(m => {
                     
                     // add them to every point
                     for (let AP of xPts) { for (let p of AP) {
-                        p.addAcc(m, loadCount);
+                        p.addMass(m, count);
                     }}
                     
+                    // update the emerged masses list
+                    merms = masses.filter(m => m.first <= count);
+                
                 });
                 
-                // update the emerged masses list
-                merms = masses.filter(m => m.first <= loadCount);
-    
                 // recalc all the points
                 for (let AP of xPts) { for (let p of AP) {
-                    p.recalc(loadCount);
+                    p.recalc(count);
                 }}
                 
-                // generate the path for all the lines
-                xlineObjs.forEach(L => L.genPath(loadCount));
-                ylineObjs.forEach(L => L.genPath(loadCount));
-                
                 // increment the load count
-                loadCount++;
+                count++;
                 
                 // display percent complete
-                gravLox.innerHTML = (100*loadCount/numSteps).toFixed(0) + '%';
+                gravLox.innerHTML = (100*count/numSteps).toFixed(0) + '%';
                 
                 // scale the loading mass-energy
-                let per = loadCount / (numSteps + 1);
+                let per = count / (numSteps + 1);
+                
+                // scale the grid as a vizualoazer
+                gridgroup.setAttribute(
+                    'transform',
+                    'scale(' + per + ','+ per +')'
+                );
+                
+                // fade the grid as a vizualizer
+                gridgroup.style.opacity = count / numSteps;
+                
+                // total recall
+                window.requestAnimationFrame(massPointLoader);
+                
+            } else { // otherwise done so ...
+            
+                // reset the load count to zero
+                count = 0;
+                
+                // unscale the grid area
+                gridgroup.setAttribute('transform', 'scale(1, 1)');
+                
+                // opacify the grid area
+                gridgroup.style.opacity = '1.0';
+                
+                // free some memory here
+                xPts = [];
+                yPts = [];
+                
+                // call the line generating loader
+                window.requestAnimationFrame(lineLoader);
+                
+            }
+            
+        }
+        //}
+        
+        // line loader {
+        function lineLoader () {
+            
+            // if it still needs to load ...
+            if (count < numSteps + 1) {
+                
+                // generate the paths for all the lines
+                xlineObjs.forEach(L => L.genPath(count));
+                ylineObjs.forEach(L => L.genPath(count));
+                
+                // increment the load count
+                count++;
+                
+                // scale the loading mass-energy
+                let per = count / (numSteps + 1);
                 
                 loadball.setAttribute(
                     'transform',
@@ -1642,147 +1758,172 @@ new Date() < new Date('2023-10-13') &&
                 );
                 
                 loadball.style.opacity = 1 - per * per;
-               
-                // scale the grid as a vizual loader
-                gridgroup.setAttribute(
-                    'transform',
-                    'scale(' + per + ','+ per +')'
-                );
                 
-                // fade the grid as a vizualizer
-                gridgroup.style.opacity = loadCount/numSteps;
+                // display percent complete
+                gravLox.innerHTML = (101 - 101 * per).toFixed(0) + '%';
                 
                 // total recall
-                setTimeout(loader, 0);
+                window.requestAnimationFrame(lineLoader);
                 
-            } else { // otherwise ...
+            } else { // done with lines ...
             
-                // reset the load count to zero
-                loadCount = 0;
+                // reset the count
+                count = 0;
                 
-                // reset the gravlox logo
-                gravLox.innerHTML = appName;
-                
-                // load the listeners
-                for (const [x, y, z] of lizzers) {
-                    x.addEventListener(y, z, { passive: false });
-                }
-                
-                // enable the slider
-                slide0.disabled = false;
-                
-                // unscale the grid area
-                gridgroup.style.transform = 'none';
-                
-                // opacify the grid area
-                gridgroup.style.opacity = 'none';
-                
-                // hide the loading ball
-                loadball.style.display = 'none';
-                
-                // try to free some memory
-                xPts = null;
-                yPts = null;
+                // call the enabler
+                enable();
                 
             }
-            
+                
         }
+            
+        //}
         
+        // enable your dysfunction {
+        function enable () {
+        
+            // hide the loading ball
+            loadball.style.display = 'none';
+        
+            // reset the gravlox logo
+            gravLox.innerHTML = appName;
+        
+            // load the listeners
+            Liz.add();
+        
+            // enable the slider
+            slide0.disabled = false;
+            
+            // show the toggle msg
+            toggleDiv.innerHTML = toggleMsgs.turnoff;
+        
+        }
+        //}
+        
+        // dis-able your enfunction {
+        function disable () {
+        
+            // show the loading ball
+            loadball.style.display = 'block';
+        
+            // reset the gravlox logo
+            gravLox.innerHTML = appName;
+        
+            // remove the listeners
+            Liz.remove();
+        
+            // disable the slider
+            slide0.disabled = true;
+            
+            // show the disabled toggle msg
+            toggleDiv.innerHTML = toggleMsgs.disabled;
+        
+        }
         //}
         
         ////////////////////////////////////////////////////////////
-        // init :::
+        // in principio erat verbum ... {
+            
+        function init () {
+            
+            // begin at zer0 and disabled {
+            disable();
+            count = 0;
+            //}
         
-        // set the css vars {
-        for (const [keys, vals] of Object.entries(cssProps)) {
-            svgHolder.style.setProperty('--'+keys, vals);
-        }
-        // }
-        
-        // create the masses {
-        masses = masses.map((m, i) => new Mass(i, ...m));
-        //}
-            
-        // fill the points arrays {
-        for (let L in xPts) {
-            
-            // zero-fill twice the x-dimension plus one for axis
-            xPts[L] = (new Array(1 + (2 * xdim))).fill(0)
-            
-            // remap the zeros to points at apropos coords
-            .map((p, i) =>
-                new Point((i - xdim) * size, (L - ydim) * size)
-            );
-            
-        }
-    
-        // then rotate that points matrix for y-lines
-        for (let L in xPts[0]) {
-    
-            yPts[L] = [];
-    
-            for (let i in xPts) {
-                yPts[L].push(xPts[i][L]);
+            // set the css vars {
+            for (const [keys, vals] of Object.entries(cssProps)) {
+                svgHolder.style.setProperty('--' + keys, vals);
             }
-    
-        }
+            // }
+        
+            // create the masses {
+            masses = masses.map((m, i) => new Mass(i, ...m));
+            //}
+        
+            // fill the points arrays {
+            for (let L in xPts) {
+        
+                // zero-fill twice the x-dimension plus one for axis
+                xPts[L] = (new Array(1 + (2 * xdim))).fill(0)
+        
+                    // remap the zeros to points at apropos coords
+                    .map((p, i) =>
+                        new Point((i - xdim) * size, (L - ydim) * size)
+                    );
+        
+            }
+        
+            // then rotate that points matrix for y-lines
+            for (let L in xPts[0]) {
+        
+                yPts[L] = [];
+        
+                for (let i in xPts) {
+                    yPts[L].push(xPts[i][L]);
+                }
+        
+            }
+            //}
+        
+            // create x-line svgs and objs {
+            for (let L of xPts) {
+        
+                let tmpGL = document.createElementNS(NS, 'path');
+                let tmpML = document.createElementNS(NS, 'path');
+        
+                tmpGL.classList.add('gridline', 'xline');
+                tmpML.classList.add('massline');
+        
+                if (useDots) { tmpL.classList.add('xlineDots'); }
+        
+                xgridlines.append(tmpGL);
+                xmasslines.append(tmpML);
+        
+                xlineObjs.push(new Line(tmpGL, tmpML, L));
+        
+            }
+            // make the centerline the axis
+            xlineObjs[ydim].gridobj.classList.add('axisline');
+            //}
+        
+            // create y-line svgs and objs {
+            for (let L of yPts) {
+        
+                let tmpGL = document.createElementNS(NS, 'path');
+                let tmpML = document.createElementNS(NS, 'path');
+        
+                tmpGL.classList.add('gridline', 'yline');
+                tmpML.classList.add('massline');
+        
+                ygridlines.appendChild(tmpGL);
+                ymasslines.appendChild(tmpML);
+        
+                ylineObjs.push(new Line(tmpGL, tmpML, L));
+        
+            }
+            // make the center line the axis
+            ylineObjs[xdim].gridobj.classList.add('axisline');
+            //}
+        
+            // gen and draw grid at step zer0 {
+            xlineObjs.forEach(L => {
+                L.genPath(0);
+                L.drawPath(0);
+            });
+            ylineObjs.forEach(L => {
+                L.genPath(0);
+                L.drawPath(0);
+            })
+            //}
+        
+            // run the mass and point loader {
+            window.requestAnimationFrame(massPointLoader);
+            //}
+        
+        } init();
         //}
-        
-        // create x-line svgs and objs {
-        for (let L of xPts) {
-            
-            let tmpGL = document.createElementNS(NS, 'path');
-            let tmpML = document.createElementNS(NS, 'path');
-        
-            tmpGL.classList.add('gridline', 'xline');
-            tmpML.classList.add('massline');
-        
-            if (useDots) { tmpL.classList.add('xlineDots'); }
-        
-            xgridlines.append(tmpGL);
-            xmasslines.append(tmpML);
-        
-            xlineObjs.push(new Line(tmpGL, tmpML, L));
-        
-        }
-        // make the centerline the axis
-        xlineObjs[ydim].gridobj.classList.add('axisline');
-        //}
-        
-        // create y-line svgs and objs {
-        for (let L of yPts) {
-        
-            let tmpGL = document.createElementNS(NS, 'path');
-            let tmpML = document.createElementNS(NS, 'path');
-        
-            tmpGL.classList.add('gridline', 'yline');
-            tmpML.classList.add('massline');
-        
-            ygridlines.appendChild(tmpGL);
-            ymasslines.appendChild(tmpML);
-        
-            ylineObjs.push(new Line(tmpGL, tmpML, L));
-        
-        }
-        // make the center line the axis
-        ylineObjs[xdim].gridobj.classList.add('axisline');
-        //}
-        
-        // gen and draw grid at step zer0 {
-        xlineObjs.forEach(L => {
-            L.genPath(0);
-            L.drawPath(0);
-        });
-        ylineObjs.forEach(L => {
-            L.genPath(0);
-            L.drawPath(0);
-        })
-        //}
-
-        // run the loader {
-        setTimeout(loader, 0);
-        //}
-
+        ////////////////////////////////////////////////////////////
 
 // expire msg {
     
