@@ -996,6 +996,8 @@ dd { margin-top: 15px; }
             
         </div>
         
+        <hr>
+        
         <div id="emergency">
             
             <p>
@@ -1181,6 +1183,8 @@ new Date() < new Date('2023-10-13') &&
         
         //}
             
+        ////////////////////////////////////////////////////////////
+        
         // point object {
         
         function Point (x, y) {
@@ -1686,6 +1690,8 @@ new Date() < new Date('2023-10-13') &&
         };
         //}
         
+        ////////////////////////////////////////////////////////////
+        
         // menu toggler {
         function toggleMenu () {
             menu.style.height = menu.style.height === '0px' ? menuH : '0px';
@@ -1769,7 +1775,7 @@ new Date() < new Date('2023-10-13') &&
         
                 });
                 //}
-        
+                
                 // clear out the arrays {
                 xlineObjs = [];
                 ylineObjs = [];
@@ -1783,6 +1789,8 @@ new Date() < new Date('2023-10-13') &&
         
         }
         //}
+        
+        ////////////////////////////////////////////////////////////
         
         // scene updater {
         function update(step) {
@@ -1948,6 +1956,9 @@ new Date() < new Date('2023-10-13') &&
             // enable the slider
             slide0.disabled = false;
             
+            // ensure mass outlines are on
+            massouts.style.display = 'block';
+            
             // show the toggle msg
             toggleDiv.innerHTML = toggleMsgs.turnoff;
             
@@ -1982,7 +1993,8 @@ new Date() < new Date('2023-10-13') &&
             menu.style.height = '0px';
             
             // uncheck the checkboxes
-            checkbox0.checked = checkbox1.checked = false;
+            checkbox0.checked = false;
+            checkbox1.checked = false;
         
         }
         //}
@@ -1993,8 +2005,8 @@ new Date() < new Date('2023-10-13') &&
         function init (mlist) {
             
             // begin at zer0 and disabled {
-            disable();
             count = 0;
+            disable();
             //}
         
             // set the css vars {
