@@ -188,6 +188,29 @@ svg {
     user-select: none;
 }
 
+#menu {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    background-color: rgba(0,0,0,0.3);
+    overflow: hidden;
+    visibility: hidden;
+    transition: height linear 250ms;
+}
+    
+input[type=checkbox] {
+    
+    width: 30px;
+    height: 30px;
+    vertical-align: middle;
+    accent-color: var(--axis-color);
+    
+}
+
+label {
+    font-style: italic;
+}
+
 #svgGrid {
     padding: 0; margin: 0;
     position: absolute;
@@ -335,8 +358,16 @@ dd { margin-top: 15px; }
     
     <div id="svgHolder">
         
-        <div id="gravLox" >grav&middot;LoX</div>
+        <div id="gravLox">grav&middot;LoX</div>
          
+        <div id="menu"><div style="padding:10px;">
+            <input id="checkbox0" type="checkbox">
+            <label id="label0" for="checkbox0">hide lines</label>
+            <br>
+            <input id="checkbox1" type="checkbox">
+            <label id="label1" for="checkbox1">unmask mass</label>
+        </div></div>
+        
         <svg id="svgGrid"
          xmlns:xlink="http://www.w3.org/2000/svg"
          width="100%"
@@ -405,7 +436,6 @@ dd { margin-top: 15px; }
     <div id="discussion">
         
         <div id="equation">
-        
         <p>
             In this scene, <i>E</i>&nbsp;=&nbsp;m<i>c</i><sup>2</sup>&nbsp;
            
@@ -915,10 +945,10 @@ dd { margin-top: 15px; }
         
         <hr>
         
-        <div id="projection">
+        <div id="threading">
             
             It might be a little easier to see what a single line
-            is doing if you look at just one line.
+            is doing with the other grid-lines removed.
             <br><br>
             <div id="toggleDiv" style="
                 width:100%;
@@ -927,15 +957,42 @@ dd { margin-top: 15px; }
                 user-select:none;
             ">~~~~~</div>
             <br>
-            [Double-clicking the scene will also toggle the lines.]
-            <br><br>
             
             Again, the masses are not masses - they are conceptual
-            locations, indicated by coordinates, that consume
+            <i>locations</i>, indicated by coordinates, that consume
             the grid in all directions, then spit it back out
-            into the mass-realm.  When those lines get projected
-            out into the other side of the equation, that takes
-            the shape of a circle.
+            into the mass-realm. It's more like the grid-lines are
+            threads that get pulled in through a hole, and make
+            little thread-loops.
+            <br><br>
+            
+            With the grid-lines turned off, it's also easier to
+            see that the loops <i>change shape</i> through
+            the progression.  When viewed initially, it seems
+            like the masses have a 'pattern' on them, and that
+            they simply grow larger. Infact, your view is not
+            'zooming in' on the mass objects at all; more and
+            more lines are getting drawn inside the mass-area
+            each time, prducing more and more of the apparent
+            field-loop pattern.
+            <br><br>
+            
+            If we recalculate the scene with only one mass,
+            and increase the universal constant, it will be
+            more obvious that the number of lines within the
+            mass-area increase as more grid-lines get sucked in,
+            and that the lines increase in size, as opposed
+            to being simply a pattern that gets magnified.
+            <br><br>
+            <div id="recalcDiv"
+             style="
+                width:100%;
+                text-align:center;
+                font-style: italic;
+                user-select:none;
+              "
+            >~~~~~</div>
+            <br>
             
         </div>
         
@@ -965,7 +1022,6 @@ dd { margin-top: 15px; }
 
 <script id="gravscript">
 
-
 // expiration date {
 new Date() < new Date('2023-10-13') &&
 
@@ -982,11 +1038,11 @@ new Date() < new Date('2023-10-13') &&
         
         const appName = 'grav&middot\;LoX';
     
-        let bigSmall = 1;
+        let bigSmall = 0;
         
         let size = [8,  2,   2][bigSmall];
-        let xdim = [50, 50, 70][bigSmall];
-        let ydim = [20, 20, 40][bigSmall];
+        let xdim = [35, 50, 70][bigSmall];
+        let ydim = [20, 22, 40][bigSmall];
         
         const numSteps = 100;
         const aniStall = 10;
@@ -1010,7 +1066,7 @@ new Date() < new Date('2023-10-13') &&
             'load-ball-stroke' : 'rgba(204,119,0,1.0)',
         };
         
-        let masses = [
+        const massList = [
             
            //[int x, int y, int first_step]
             
@@ -1028,9 +1084,20 @@ new Date() < new Date('2023-10-13') &&
             
         ];
         
+        const menuMsgs = {
+            hide: 'hide lines',
+            mask: 'unmask masses'
+        };
+        
         const toggleMsgs = {
-            turnon  : '~~ click to show lines ~~',
-            turnoff : '~~ click to hide lines ~~',
+            turnon   : '~~ click to show lines ~~',
+            turnoff  : '~~ click to hide lines ~~',
+            disabled : '~~~~~'
+        };
+        
+        const recalcMsgs = {
+            onemass  : '~~ recalc one mass ~~',
+            randmass : '~~ calc random masses ~~',
             disabled : '~~~~~'
         };
     
@@ -1040,6 +1107,7 @@ new Date() < new Date('2023-10-13') &&
         
         let count = 0;
     
+        // svg image elements {
         const NS = 'http://www.w3.org/2000/svg';
         const svgHolder = document.getElementById('svgHolder');
         const xlines = document.getElementById('xlines');
@@ -1049,13 +1117,38 @@ new Date() < new Date('2023-10-13') &&
         const massgroup = document.getElementById('massgroup');
         const massdots = document.getElementById('massdots');
         const massouts = document.getElementById('massouts');
+        //}
         
+        // slider input elements {
         const slideDiv = document.getElementById('slideDiv' );
         const slide0 = document.getElementById('slide0' );
         slide0.disabled = true;
+        //}
     
+        // toggle divs and captions {
         const toggleDiv = document.getElementById('toggleDiv');
         toggleDiv.innerHTML = toggleMsgs.disabled;
+        const recalcDiv = document.getElementById('recalcDiv');
+        recalcDiv.innerHTML = recalcMsgs.disabled;
+        recalcDiv.old = recalcMsgs.onemass;
+        //}
+        
+        // menu elements and configuration {
+        const menu = document.getElementById('menu');
+        const menuH = window.getComputedStyle(menu).height;
+        menu.style.visibility = 'visible';
+        menu.style.height = '0px';
+        const checkbox0 = document.getElementById('checkbox0');
+        const label0 = document.getElementById('label0');
+        label0.innerText = menuMsgs.hide;
+        const checkbox1 = document.getElementById('checkbox1');
+        const label1 = document.getElementById('label1');
+        label1.innerText = menuMsgs.mask;
+        //}
+        
+        //}
+        
+        // global arrays {
         
         let xPts = (new Array(1 + (2 * ydim))).fill(0);
         let yPts = [];
@@ -1063,6 +1156,7 @@ new Date() < new Date('2023-10-13') &&
         let xlineObjs = [];
         let ylineObjs = [];
         
+        let masses = [];
         let merms = [];
         
         //}
@@ -1075,11 +1169,15 @@ new Date() < new Date('2023-10-13') &&
           //Math.pow(A.z - B.z, 2) the mythical third dimension
         ); //}
 
-        const randFrom = (...A) => // {
-            Math.min(...A) + Math.random() * (Math.max(...A) - Math.min(...A));
-            
-        const randInt = A => ~~(Math.random() * A);
+        //const randFrom = (...A) => // {
+            //Math.min(...A) + Math.random() * (Math.max(...A) - Math.min(...A));
         //}
+        
+        //const randInt = A => ~~(Math.random() * A);
+
+        //const xBetweenYandZ = (x, y, z) => (x-y) * (x-z) < 0;
+        
+        //const gate = (...v) => v.sort((a, b) => a - b)[1];
         
         //}
             
@@ -1498,82 +1596,84 @@ new Date() < new Date('2023-10-13') &&
             }],
             //}
         
+            // swallow double clicks on menu {
+            [menu, 'dblclick', e => {
+                e.stopPropagation();
+                e.cancelBubble = true;
+            }],
+            //}
+            
             // toggle lines on div click {
             [toggleDiv, 'click', e => {
-        
-                if (massouts.style.display !== 'none') {
-        
+                
+                if (toggleDiv.innerHTML === toggleMsgs.turnoff) {
+                    
                     toggleDiv.innerHTML = toggleMsgs.turnon;
-        
-                    toggleDiv.loop = setTimeout(() => {
-        
-                        clearTimeout(toggleDiv.loop);
-        
-                        massouts.style.display = 'none';
-                        massdots.childNodes.forEach(m =>
-                            m.style.fill = '#fff'
-                        );
-        
-                        [...xlineObjs, ...ylineObjs].forEach(L => {
-                            if (!L.gridobj.classList.contains('axisline')) {
-                                L.gridobj.style.display = 'none';
-                                L.massobj.style.display = 'none';
-                            }
-                        })
-                    }, 0);
-        
-        
-                }
-                else {
-        
+                    checkbox0.checked = true;
+                    toggleGrid();
+                    checkbox1.checked = true;
+                    toggleMask();
+                    
+                } else {
+                    
                     toggleDiv.innerHTML = toggleMsgs.turnoff;
-        
-                    toggleDiv.loop = setTimeout(() => {
-        
-                        clearTimeout(toggleDiv.loop);
-        
-                        massouts.style.display = 'block';
-                        massdots.childNodes.forEach(m =>
-                            m.style.fill = '#000'
-                        );
-        
-                        [...xlineObjs, ...ylineObjs].forEach(L => {
-                            if (!L.gridobj.classList.contains('axisline')) {
-                                L.gridobj.style.display = 'block';
-                                L.massobj.style.display = 'block';
-                            }
-                        })
-                    }, 0);
-        
+                    checkbox0.checked = false;
+                    toggleGrid();
+                    checkbox1.checked = false;
+                    toggleMask();
+                    
                 }
+                
             }],
             //}
         
-            // reset on scene double-click {
+            // reset masses on div click {
+            [recalcDiv, 'click', e => {
+                
+                if (recalcDiv.innerHTML === recalcMsgs.onemass) {
+                    
+                    resetMasses([[-24, -8, 0]], 0.01);
+                    recalcDiv.old = recalcMsgs.randmass;
+                    
+                } else {
+                    resetMasses(massList, 0.001);
+                    recalcDiv.old = recalcMsgs.onemass;
+                }
+                
+            }],
+            //}
+            
+            // toggle menu on scene double-click {
             [svgHolder, 'dblclick', e => {
         
                 e.preventDefault();
-        
-                // stop animation if running {
-                if (aniMaker.isLooping !== false) {
-        
-                    // stop the loop
-                    aniMaker.stop();
-        
-                }
-                //}
-        
-                // reset the masses
-                resetMasses([[0, 0, 0]], 0.01);
+                
+                toggleMenu();
+                
 
             }],
             //}
         
+            // hide lines on menu checkbox {
+            [checkbox0, 'change', e => {
+                toggleGrid();
+            }],
+            //}
+            
+            // unmask masses on menu checkbox {
+            [checkbox1, 'change', e => {
+                toggleMask();
+            }],
+            //}
+            
+            
             ],
             
-            add : function () {
-                for (const [x, y, z] of this.lizzers) {
-                    x.addEventListener(y, z, { passive: false });
+            add : function (L = this.lizzers) {
+                for (const [x, y, z] of L) {
+                    y.split(',').forEach(e =>
+                        x.addEventListener(e, z, { passive: false })
+                    );
                 }
             },
             
@@ -1586,11 +1686,65 @@ new Date() < new Date('2023-10-13') &&
         };
         //}
         
+        // menu toggler {
+        function toggleMenu () {
+            menu.style.height = menu.style.height === '0px' ? menuH : '0px';
+        }
+        //}
+        
+        // grid-line toggler {
+        function toggleGrid () {
+        
+            if (checkbox0.checked) {
+                
+                massouts.style.display = 'none';
+        
+                [...xlineObjs, ...ylineObjs].forEach(L => {
+                    if (!L.gridobj.classList.contains('axisline')) {
+                        L.gridobj.style.display = 'none';
+                        L.massobj.style.display = 'none';
+                    }
+                });
+        
+        
+            } else {
+                
+                massouts.style.display = 'block';
+        
+                [...xlineObjs, ...ylineObjs].forEach(L => {
+                    if (!L.gridobj.classList.contains('axisline')) {
+                        L.gridobj.style.display = 'block';
+                        L.massobj.style.display = 'block';
+                    }
+                });
+            }
+        }
+        //}
+        
+        // mass mask toggler {
+        function toggleMask () {
+        
+            if (checkbox1.checked) {
+        
+                massdots.childNodes.forEach(m => m.style.fill = '#fff');
+        
+            } else {
+        
+                massdots.childNodes.forEach(m => m.style.fill = '#000');
+            }
+        }
+        //}
+        
         // mass resetter {
-        function resetMasses (m, uc) {
+        function resetMasses (mlist, uc) {
                     
-                // change the masses {
-                masses = m;
+                // stop animation if running {
+                if (aniMaker.isLooping !== false) {
+        
+                    // stop the loop
+                    aniMaker.stop();
+        
+                }
                 //}
         
                 // alter the universal constant {
@@ -1625,7 +1779,7 @@ new Date() < new Date('2023-10-13') &&
                 //}
         
                 // restart the universe ...
-                init();
+                init(mlist);
         
         }
         //}
@@ -1796,6 +1950,9 @@ new Date() < new Date('2023-10-13') &&
             
             // show the toggle msg
             toggleDiv.innerHTML = toggleMsgs.turnoff;
+            
+            // show the old recalc msg
+            recalcDiv.innerHTML = recalcDiv.old;
         
         }
         //}
@@ -1817,6 +1974,15 @@ new Date() < new Date('2023-10-13') &&
             
             // show the disabled toggle msg
             toggleDiv.innerHTML = toggleMsgs.disabled;
+            
+            // show the disabled recalc msg
+            recalcDiv.innerHTML = recalcMsgs.disabled;
+            
+            // hide any protruding menu
+            menu.style.height = '0px';
+            
+            // uncheck the checkboxes
+            checkbox0.checked = checkbox1.checked = false;
         
         }
         //}
@@ -1824,7 +1990,7 @@ new Date() < new Date('2023-10-13') &&
         ////////////////////////////////////////////////////////////
         // in principio erat verbum ... {
             
-        function init () {
+        function init (mlist) {
             
             // begin at zer0 and disabled {
             disable();
@@ -1838,7 +2004,7 @@ new Date() < new Date('2023-10-13') &&
             // }
         
             // create the masses {
-            masses = masses.map((m, i) => new Mass(i, ...m));
+            masses = mlist.map((m, i) => new Mass(i, ...m));
             //}
         
             // fill the points arrays {
@@ -1921,7 +2087,7 @@ new Date() < new Date('2023-10-13') &&
             window.requestAnimationFrame(massPointLoader);
             //}
         
-        } init();
+        } init(massList);
         //}
         ////////////////////////////////////////////////////////////
 
