@@ -237,10 +237,13 @@ label {
     fill: none;
     pointer-events: stroke;
     vector-effect: non-scaling-stroke;
-    xxxstroke-dasharray: 10 4;
-    xxxstroke-dashoffset: 0;
-    xxxanimation: move-grid-line 0.5s linear infinite;
-    transition: opacity 1s linear;
+    xxxtransition: opacity 1s linear;
+}
+
+.aniline {
+    stroke-dasharray: 10 4;
+    stroke-dashoffset: 0;
+    animation: move-grid-line 0.5s linear infinite;
 }
 
 .xlineDots {
@@ -363,7 +366,7 @@ dd { margin-top: 15px; }
          
         <div id="menu"><div style="padding:10px;">
             <input id="checkbox0" type="checkbox">
-            <label id="label0" for="checkbox0">hide lines</label>
+            <label id="label0" for="checkbox0">hide grid</label>
             <br>
             <input id="checkbox1" type="checkbox">
             <label id="label1" for="checkbox1">unmask mass</label>
@@ -407,6 +410,7 @@ dd { margin-top: 15px; }
             <g id=gridgroup mask="url(#hole)">
                 <g id="xgridlines"></g>
                 <g id="ygridlines"></g>
+                <g id="axislines"></g>
             </g>
             
             <g id="massgroup">
@@ -745,9 +749,7 @@ dd { margin-top: 15px; }
             that occurs as the objects swallow the
             surrounding grid-space.
         </p>
-        </div>
-        
-        <hr>
+        </div>  <hr>
         
         <div id="fabric">
         <p>
@@ -819,9 +821,7 @@ dd { margin-top: 15px; }
             of grid-lines has been concentrated between
             the 'centers of mass' of each object.]
         </p>
-        </div>
-        
-        <hr>
+        </div>  <hr>
         
         <div id="boxing">
         
@@ -942,9 +942,7 @@ dd { margin-top: 15px; }
             which is why they were reduced to planes for
             this example.
         </p>
-        </div>
-        
-        <hr>
+        </div>  <hr>
         
         <div id="threading">
             
@@ -952,10 +950,10 @@ dd { margin-top: 15px; }
             itself is doing if the other grid-lines are removed.
             <br><br>
             <div id="toggleDiv" style="
-                width:100%;
-                text-align:center;
+                width: 100%;
+                text-align: center;
                 font-style: italic;
-                user-select:none;
+                user-select: none;
             ">~~~~~</div>
             <br>
             
@@ -983,11 +981,18 @@ dd { margin-top: 15px; }
              style="
                 font-variant-caps: all-small-caps;
                 font-style: italic;
-                user-select:none;
+                user-select: none;
              "
             >click here</span>
             to toggle a menu that allows for adjusting what
-            gets displayed.]
+            gets displayed. If you want to, you can also
+            <span id="toggleAnilineDiv"
+             style="
+                font-variant-caps: all-small-caps;
+                font-style: italic;
+                user-select: none;
+             "
+            >animate the line</span>, which might also help.]
             <br><br>
             
             A <i>mask</i> has been placed over each area where the
@@ -1023,9 +1028,10 @@ dd { margin-top: 15px; }
             <br>
             
             You can recalculate with some new randomly placed mass
-            locations aswell.
+            locations aswell, if you don't mind sitting through
+            the recalculation.
             
-        </div>
+        </div>  <hr>
         
         <div id="constancy">
             
@@ -1084,9 +1090,7 @@ dd { margin-top: 15px; }
             mass-lines.]
             </p>
             
-        </div>
-        
-        <hr>
+        </div>  <hr>
         
         <div id="emergency">
             
@@ -1096,11 +1100,11 @@ dd { margin-top: 15px; }
             The objects are not drawn towards eachother.
             There is no gravity.
             There are no objects.
+            <i>The Grav&middot;Lox are one.</i>
             </p>
             
         </div>
 
-        
         <p id="sig" style="text-align:right;width:100%"><i>~queviva</i></p>
         
         <p class="addendum"></p>
@@ -1175,7 +1179,7 @@ new Date() < new Date('2023-10-13') &&
         ];
         
         const menuMsgs = {
-            hide: 'hide lines',
+            hide: 'hide grid',
             mask: 'unmask masses'
         };
         
@@ -1200,8 +1204,9 @@ new Date() < new Date('2023-10-13') &&
         // svg image elements {
         const NS = 'http://www.w3.org/2000/svg';
         const svgHolder = document.getElementById('svgHolder');
-        const xlines = document.getElementById('xlines');
-        const ylines = document.getElementById('ylines');
+        const axislines = document.getElementById('axislines');
+        const xgridlines = document.getElementById('xgridlines');
+        const ygridlines = document.getElementById('ygridlines');
         const loadball = document.getElementById('loadball');
         const gridgroup = document.getElementById('gridgroup');
         const massgroup = document.getElementById('massgroup');
@@ -1259,11 +1264,11 @@ new Date() < new Date('2023-10-13') &&
           //Math.pow(A.z - B.z, 2) the mythical third dimension
         ); //}
 
-        //const randFrom = (...A) => // {
-            //Math.min(...A) + Math.random() * (Math.max(...A) - Math.min(...A));
+        const randFrom = (...A) => // {
+            ~~(Math.min(...A) + Math.random() * (Math.max(...A) - Math.min(...A)));
         //}
         
-        //const randInt = A => ~~(Math.random() * A);
+        const randInt = A => ~~(Math.random() * A);
 
         //const xBetweenYandZ = (x, y, z) => (x-y) * (x-z) < 0;
         
@@ -1724,12 +1729,23 @@ new Date() < new Date('2023-10-13') &&
                 
                 if (recalcDiv.innerHTML === recalcMsgs.onemass) {
                     
+                    // this is one big mass with fast growth
                     resetMasses([[-24, -8, 0]], 0.01);
                     recalcDiv.old = recalcMsgs.randmass;
                     
                 } else {
-                    resetMasses(massList, 0.001);
+                    
+                    resetMasses([
+                        
+                        // place three in general areas
+                        [randFrom(-30,-20), randInt(10), 0],
+                        [randFrom(20,35), randInt(-10), randFrom(15,25)],
+                        [randFrom(-45,-40), randFrom(-10,3), 82]
+                        
+                    ], 0.001); // use slower universal constant
+                    
                     recalcDiv.old = recalcMsgs.onemass;
+                    
                 }
                 
             }],
@@ -1761,6 +1777,12 @@ new Date() < new Date('2023-10-13') &&
             // toggle menu from dialogue {
             [document.getElementById('toggleMenuDiv'), 'click', e => {
                 toggleMenu();
+            }],
+            //}
+            
+            // toggle animation in discussion {
+            [document.getElementById('toggleAnilineDiv'), 'click', e => {
+                toggleAniline();
             }]
             //}
             
@@ -1834,6 +1856,36 @@ new Date() < new Date('2023-10-13') &&
         }
         //}
         
+        // line animation toggler {
+        function toggleAniline () {
+            
+            let tmpL = [
+                axislines.childNodes[0],
+                axislines.childNodes[1],
+                xlineObjs[ydim].massobj,
+                ylineObjs[xdim].massobj
+            ];
+            
+            if (axislines.childNodes[0].classList.contains('aniline')) {
+                
+                tmpL.forEach(L => {
+                    L.classList.remove('aniline');
+                    L.style.strokeWidth = 0.8;
+                });
+            
+            } else {
+                
+                tmpL.forEach(L => {
+                    L.classList.add('aniline');
+                    L.style.strokeWidth = 2.0;
+                });
+            }
+    
+        }
+        //}
+        
+        ////////////////////////////////////////////////////////////
+        
         // mass resetter {
         function resetMasses (mlist, uc) {
                     
@@ -1858,7 +1910,8 @@ new Date() < new Date('2023-10-13') &&
                 [
                     xgridlines, ygridlines,
                     xmasslines, ymasslines,
-                    massdots, massouts
+                    massdots, massouts,
+                    axislines
         
                 ].forEach(g => {
         
@@ -1882,8 +1935,6 @@ new Date() < new Date('2023-10-13') &&
         
         }
         //}
-        
-        ////////////////////////////////////////////////////////////
         
         // scene updater {
         function update(step) {
@@ -2004,7 +2055,7 @@ new Date() < new Date('2023-10-13') &&
                 // increment the load count
                 count++;
                 
-                // scale the loading mass-energy
+                // scale the loading ball mass-energy
                 let per = count / (numSteps + 1);
                 
                 loadball.setAttribute(
@@ -2156,6 +2207,7 @@ new Date() < new Date('2023-10-13') &&
             }
             // make the centerline the axis
             xlineObjs[ydim].gridobj.classList.add('axisline');
+            axislines.appendChild(xlineObjs[ydim].gridobj);
             //}
         
             // create y-line svgs and objs {
@@ -2175,6 +2227,7 @@ new Date() < new Date('2023-10-13') &&
             }
             // make the center line the axis
             ylineObjs[xdim].gridobj.classList.add('axisline');
+            axislines.appendChild(ylineObjs[xdim].gridobj);
             //}
         
             // gen and draw grid at step zer0 {
