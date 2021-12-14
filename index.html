@@ -335,6 +335,7 @@ num::before {content: "\00a0\00a0"; }
 num::after {content: "\00a0\00a0"; }
 
 sup { font-size: 0.6em; }
+sub { font-size: 0.6em; }
 
 com { font-size: 0.5em; }
 com::before{ content: "\00a0\00a0\00a0["; }
@@ -437,8 +438,8 @@ dd { margin-top: 15px; }
         
         <div id="equation">
         <p>
-            In this scene, <i>E</i>&nbsp;=&nbsp;m<i>c</i><sup>2</sup>&nbsp;
-           
+            In this scene,
+            <i>E</i>&nbsp;=&nbsp;m<i>c</i><sup>2</sup>&nbsp;
             and you probably recognize that the letter&nbsp;<i>c</i>
             in that equation
             refers to a <i>speed</i>; specifically,
@@ -948,7 +949,7 @@ dd { margin-top: 15px; }
         <div id="threading">
             
             It might be a little easier to see what a single line
-            is doing with the other grid-lines removed.
+            itself is doing if the other grid-lines are removed.
             <br><br>
             <div id="toggleDiv" style="
                 width:100%;
@@ -962,7 +963,7 @@ dd { margin-top: 15px; }
             <i>locations</i>, indicated by coordinates, that consume
             the grid in all directions, then spit it back out
             into the mass-realm. It's more like the grid-lines are
-            threads that get pulled in through a hole, and make
+            threads that get pulled in through a pin hole, and make
             little thread-loops.
             <br><br>
             
@@ -977,10 +978,37 @@ dd { margin-top: 15px; }
             field-loop pattern.
             <br><br>
             
+            [You can double-click the scene, or
+            <span id="toggleMenuDiv"
+             style="
+                font-variant-caps: all-small-caps;
+                font-style: italic;
+                user-select:none;
+             "
+            >click here</span>
+            to toggle a menu that allows for adjusting what
+            gets displayed.]
+            <br><br>
+            
+            A <i>mask</i> has been placed over each area where the
+            mass-lines appear in order to
+            cover the lines from the grid and make the view
+            less cluttered.
+            Unmasking the masses will allow you to see that
+            all the grid-lines <i>are</i> still being drawn
+            on the grid-plane.
+            <br><br>
+            
+            In this configuration, the mass-lines give the
+            impression that each mass has a <i>pattern</i>
+            drawn on it, and that progressing through the
+            animation enlarges your view of that pattern.
+            <br><br>
+            
             If we recalculate the scene with only one mass,
             and increase the universal constant, it will be
             more obvious that the number of lines within the
-            mass-area increase as more grid-lines get sucked in,
+            mass-area increases as more grid-lines get sucked in,
             and that the lines increase in size, as opposed
             to being simply a pattern that gets magnified.
             <br><br>
@@ -993,6 +1021,68 @@ dd { margin-top: 15px; }
               "
             >~~~~~</div>
             <br>
+            
+            You can recalculate with some new randomly placed mass
+            locations aswell.
+            
+        </div>
+        
+        <div id="constancy">
+            
+            <p>
+            Remember back when we said that we were not going to
+            be concerned <i>at the time</i> with exactly
+            what values were contained in the
+            <i>E</i>&nbsp;=&nbsp;m<i>c</i><sup>2</sup>&nbsp;
+            equation? Well, now we've finally reached the point
+            where we actually <i>still</i> don't care!
+            </p>
+            
+            <p>
+            The calculation in the scene werks not by knowing
+            how far light moves in a second but by using
+            the <i>speed of mass.</i> And it's not even that;
+            it's not even the <i>speed</i> of mass - it's the
+            <i>relative rate</i> of the speed of mass
+            compared to the speed of light.
+            </p>
+            
+            <p>
+            For this equation, it doesn't matter what the
+            speed of light is, it only matters what
+            <i>percent</i> of the speed of light the
+            speed of mass is. Maybe mass only expands at
+            ten percent the speed of light, or maybe only
+            one percent - or maybe a <i>much, much smaller</i>
+            percent; it doesn't matter what the actual value
+            is, just the relative percent.
+            </p>
+            
+            <p>
+            This 'universal constant' of the <i>speed of mass</i>
+            can be adjusted - which was done, for instance,
+            to allow you to more clearly see the expansion of
+            mass in the scene.
+            </p>
+            
+            <p>
+            Mass-locations begin consuming the grid at the
+            rate of the 'inverse square'. The supposed masses
+            are simply coordinate designations; the grid-points
+            are also nothing more than coordinates.
+            That is to say, there is no 'm<sub>1</sub>'
+            or 'm<sub>2</sub>' or any mass involved in the
+            computation - there is no 'big G' or gravitational
+            constant. The coordinate locations of the masses
+            begin eating up the grid at the rate of
+            <frac><num>1</num>2</frac>a<i>t</i><sup>2</sup>
+            and the mass-lines begin projecting into the
+            mass-realm at some fraction of that rate.
+            [This allows you to drop the <frac><num>1</num>2</frac>
+            and just use the consumption rate of a<i>t</i><sup>2</sup>
+            for the grid and %a<i>t</i><sup>2</sup> for the
+            mass-lines.]
+            </p>
             
         </div>
         
@@ -1010,12 +1100,10 @@ dd { margin-top: 15px; }
             
         </div>
 
-        <hr>
-        
-        <p class="addendum"></p>
         
         <p id="sig" style="text-align:right;width:100%"><i>~queviva</i></p>
         
+        <p class="addendum"></p>
         
     </div>
   
@@ -1040,7 +1128,7 @@ new Date() < new Date('2023-10-13') &&
         
         const appName = 'grav&middot\;LoX';
     
-        let bigSmall = 0;
+        let bigSmall = 2;
         
         let size = [8,  2,   2][bigSmall];
         let xdim = [35, 50, 70][bigSmall];
@@ -1670,6 +1758,11 @@ new Date() < new Date('2023-10-13') &&
             }],
             //}
             
+            // toggle menu from dialogue {
+            [document.getElementById('toggleMenuDiv'), 'click', e => {
+                toggleMenu();
+            }]
+            //}
             
             ],
             
