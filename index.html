@@ -166,6 +166,7 @@ svg {
     --line-color: 'purple';
     --axis-width: 1;
     --axis-color: #e90;
+    --ani-color: #c30;
     --dot-color: var(--color);
     --mass-color: #e90;
     --mass-stroke: #c70;
@@ -240,12 +241,6 @@ label {
     xxxtransition: opacity 1s linear;
 }
 
-.aniline {
-    stroke-dasharray: 10 4;
-    stroke-dashoffset: 0;
-    animation: move-grid-line 0.5s linear infinite;
-}
-
 .xlineDots {
     marker-start: url(#dot);
     marker-mid: url(#dot);
@@ -265,6 +260,12 @@ label {
     stroke: var(--axis-color);
     stroke-width: var(--axis-width);
     vector-effect: non-scaling-stroke;
+}
+
+.aniline {
+    stroke-dasharray: 10 4;
+    stroke-dashoffset: 0;
+    animation: move-grid-line 0.5s linear infinite;
 }
 
 #loadball {
@@ -322,6 +323,7 @@ label {
 
 </style>
 <style id="mathStyles">
+/* (c) Aaron Aaronson */
 
 frac {
     display: inline-grid;
@@ -410,12 +412,13 @@ dd { margin-top: 15px; }
             <g id=gridgroup mask="url(#hole)">
                 <g id="xgridlines"></g>
                 <g id="ygridlines"></g>
-                <g id="axislines"></g>
+                <g id="axgridlines"></g>
             </g>
             
             <g id="massgroup">
                 <g id="xmasslines"></g>
                 <g id="ymasslines"></g>
+                <g id="axmasslines"></g>
             </g>
             
             <g id="massouts"></g>
@@ -1100,7 +1103,6 @@ dd { margin-top: 15px; }
             The objects are not drawn towards eachother.
             There is no gravity.
             There are no objects.
-            <i>The Grav&middot;Lox are one.</i>
             </p>
             
         </div>
@@ -1115,6 +1117,11 @@ dd { margin-top: 15px; }
 </body>
 
 <script id="gravscript">
+
+////////////////////////////////////////////////////////////{
+// licensed from Aaron Aaronson, November 2021             //
+// MCMLXXXVIII                                             //
+////////////////////////////////////////////////////////////}
 
 // expiration date {
 new Date() < new Date('2023-10-13') &&
@@ -1151,8 +1158,10 @@ new Date() < new Date('2023-10-13') &&
             'line-color' : 'hsla(48,100%,88%,1.0)',
             'axis-width' : 0.6,
             'axis-color' : 'rgba(255,165,0,1.0)',
+            'ani-width'  : 1.2,
+            'ani-color'  : '#c30',
             'mass-color' : '#000',
-            'mass-stroke' : 'rgba(255,165,0,1.0)',//'rgba(204,119,0,1.0)',
+            'mass-stroke' : 'rgba(255,165,0,1.0)',
             'mass-stroke-width' : 3,
             'mass-line-width' : 0.8,
             'mass-line-color' : 'rgba(255,165,0,1.0)',
@@ -1201,12 +1210,13 @@ new Date() < new Date('2023-10-13') &&
         
         let count = 0;
     
-        // svg image elements {
+        // svg elements {
         const NS = 'http://www.w3.org/2000/svg';
         const svgHolder = document.getElementById('svgHolder');
-        const axislines = document.getElementById('axislines');
         const xgridlines = document.getElementById('xgridlines');
         const ygridlines = document.getElementById('ygridlines');
+        const axgridlines = document.getElementById('axgridlines');
+        const axmasslines = document.getElementById('axmasslines');
         const loadball = document.getElementById('loadball');
         const gridgroup = document.getElementById('gridgroup');
         const massgroup = document.getElementById('massgroup');
@@ -1860,25 +1870,28 @@ new Date() < new Date('2023-10-13') &&
         function toggleAniline () {
             
             let tmpL = [
-                axislines.childNodes[0],
-                axislines.childNodes[1],
-                xlineObjs[ydim].massobj,
-                ylineObjs[xdim].massobj
+                axgridlines.childNodes[0],
+                axgridlines.childNodes[1],
+                axmasslines.childNodes[0],
+                axmasslines.childNodes[1]
             ];
             
-            if (axislines.childNodes[0].classList.contains('aniline')) {
+            if (axgridlines.childNodes[0].classList.contains('aniline')) {
                 
                 tmpL.forEach(L => {
                     L.classList.remove('aniline');
-                    L.style.strokeWidth = 0.8;
+                    L.style.strokeWidth = 'var(--axis-width)';
+                    L.style.stroke = 'var(--axis-color)';
                 });
             
             } else {
                 
                 tmpL.forEach(L => {
                     L.classList.add('aniline');
-                    L.style.strokeWidth = 2.0;
+                    L.style.strokeWidth = 'var(--ani-width)';
+                    L.style.stroke = 'var(--ani-color)';
                 });
+                
             }
     
         }
@@ -1908,10 +1921,9 @@ new Date() < new Date('2023-10-13') &&
         
                 // remove all svg lines and masses {
                 [
-                    xgridlines, ygridlines,
-                    xmasslines, ymasslines,
+                    xgridlines, ygridlines, axgridlines,
+                    xmasslines, ymasslines, axmasslines,
                     massdots, massouts,
-                    axislines
         
                 ].forEach(g => {
         
@@ -2205,9 +2217,12 @@ new Date() < new Date('2023-10-13') &&
                 xlineObjs.push(new Line(tmpGL, tmpML, L));
         
             }
+            
             // make the centerline the axis
             xlineObjs[ydim].gridobj.classList.add('axisline');
-            axislines.appendChild(xlineObjs[ydim].gridobj);
+            axgridlines.appendChild(xlineObjs[ydim].gridobj);
+            axmasslines.appendChild(xlineObjs[ydim].massobj);
+            
             //}
         
             // create y-line svgs and objs {
@@ -2225,9 +2240,11 @@ new Date() < new Date('2023-10-13') &&
                 ylineObjs.push(new Line(tmpGL, tmpML, L));
         
             }
-            // make the center line the axis
+            
+            // make the centerline the axis
             ylineObjs[xdim].gridobj.classList.add('axisline');
-            axislines.appendChild(ylineObjs[xdim].gridobj);
+            axgridlines.appendChild(ylineObjs[xdim].gridobj);
+            axmasslines.appendChild(ylineObjs[xdim].massobj);
             //}
         
             // gen and draw grid at step zer0 {
