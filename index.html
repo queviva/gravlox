@@ -2,6 +2,7 @@
     
 <head><title>gravLox</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
 <style id="docStyles">
 
 * {
@@ -323,7 +324,7 @@ label {
 
 </style>
 <style id="mathStyles">
-/* (c) Aaron Aaronson */
+/* (c) Aardvark Aaronson */
 
 frac {
     display: inline-grid;
@@ -1119,7 +1120,7 @@ dd { margin-top: 15px; }
 <script id="gravscript">
 
 ////////////////////////////////////////////////////////////{
-// licensed from Aaron Aaronson, November 2021             //
+// licensed from Aardvark Aaronson, November 2021          //
 // MCMLXXXVIII                                             //
 ////////////////////////////////////////////////////////////}
 
@@ -1139,7 +1140,7 @@ new Date() < new Date('2023-10-13') &&
         
         const appName = 'grav&middot\;LoX';
     
-        let bigSmall = 2;
+        let bigSmall = 0;
         
         let size = [8,  2,   2][bigSmall];
         let xdim = [35, 50, 70][bigSmall];
@@ -1798,19 +1799,16 @@ new Date() < new Date('2023-10-13') &&
             
             ],
             
-            add : function (L = this.lizzers) {
+            add : function (L = this.lizzers, v = 0) {
                 for (const [x, y, z] of L) {
                     y.split(',').forEach(e =>
-                        x.addEventListener(e, z, { passive: false })
+                        x[['add','remove'][v] + 'EventListener'
+                        ](e, z, { passive: false })
                     );
                 }
             },
             
-            remove : function () {
-                for (const [x, y, z] of this.lizzers) {
-                    x.removeEventListener(y, z, { passive: false });
-                }
-            }
+            remove : function () { this.add(this.lizzers, 1); }
             
         };
         //}
