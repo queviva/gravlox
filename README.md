@@ -1,2 +1,2 @@
 # gravlox
-gravity grid lock
+[gravity grid lock](https://queviva.github.io/gravlox/)
