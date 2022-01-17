@@ -1,374 +1,403 @@
-<!doctype html><html>
-    
-<head><title>gravLox</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/x-icon" href="favicon.ico">
-<style id="docStyles">
+<!doctype html>
+<html>
 
-* {
-    box-sizing: border-box;
-    word-wrap: break-word;
-    --hue: 48;
-    --sat: 100%;
-    --lit: 88%;
-    --color: hsl(var(--hue),var(--sat),var(--lit));
-    --backcolor: hsl(120, 100%, 13%);
-    --litback: hsla(120,50%,25%);
-}
+<head>
+	<title>grav~lox</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" type="image/x-icon" href="favicon.ico">
+	<style id="docStyles">
+		* {
+			box-sizing: border-box;
+			word-wrap: break-word;
+			--hue: 48;
+			--sat: 100%;
+			--lit: 88%;
+			--color: hsl(var(--hue), var(--sat), var(--lit));
+			--backcolor: hsl(120, 100%, 13%);
+			--litback: hsla(120, 50%, 25%);
+		}
 
-body {
-    padding: 0px;
-    margin: 0px;
-    background-color: #000;
-    hyphens: auto;
-    text-align: center;
-}
+		body {
+			padding: 0px;
+			margin: 0px;
+			background-color: #000;
+			hyphens: auto;
+			text-align: center;
+		}
 
-#holder {
-    display: inline-grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1fr;
-    padding: 10px;
-    font-size: 24px;
-    text-align: justify;
-    max-width: 700px;
-    width: 100%;
-    height: 100vh;
-    margin: auto;
-    xxxborder: 1px solid #000;
-    background-color: var(--backcolor);
-    color: var(--color);
-    z-index: 2;
-}
+		#holder {
+			display: inline-grid;
+			grid-template-columns: 1fr;
+			grid-template-rows: 1fr 1fr;
+			padding: 10px;
+			font-size: 24px;
+			text-align: justify;
+			max-width: 700px;
+			width: 100%;
+			height: 100vh;
+			margin: auto;
+			xxxborder: 1px solid #000;
+			background-color: var(--backcolor);
+			color: var(--color);
+			z-index: 2;
+		}
 
-#discussion {
-    margin: 0px;
-    overflow-x: hidden;
-    overflow-y: auto;
-    min-height: 40px;
-}
+		#discussion {
+			margin: 0px;
+			overflow-x: hidden;
+			overflow-y: auto;
+			min-height: 40px;
+		}
 
-.addendum {
-    font-size: 0.9em;
-    opacity: .3;
-}
+		.addendum {
+			font-size: 0.9em;
+			opacity: .3;
+		}
 
-div {
-    position: relative;
-    margin:0;
-    padding:0;
-}
+		div {
+			position: relative;
+			margin: 0;
+			padding: 0;
+		}
 
-hr {
-    border-top: 1px solid var(--color);
-    border-bottom: none;
-    border-left: none;
-    border-right: none;
-    margin: 50px 0px 50px 0px;
-}
+		hr {
+			border-top: 1px solid var(--color);
+			border-bottom: none;
+			border-left: none;
+			border-right: none;
+			margin: 50px 0px 50px 0px;
+		}
 
-img {
-    xxxwidth: 100%;
-    xxxmax-width: 400px;
-}
+		img {
+			xxxwidth: 100%;
+			xxxmax-width: 400px;
+		}
 
-a, a:visited {
-    color: var(--color);
-    text-decoration: none;
-    transition: 300ms linear color;
-}
+		a,
+		a:visited {
+			color: var(--color);
+			text-decoration: none;
+			transition: 300ms linear color;
+		}
 
-a:hover {
-    color: #e86;
-    transition: 300ms linear color;
-}
+		a:hover {
+			color: #e86;
+			transition: 300ms linear color;
+		}
 
-input {
-    --thumbH : 40px;
-    --color: 48, 100%;
-    --lightness: 88%;
-    --midness:  var(--lightness);/*calc(0.37 * var(--lightness));*/
-}
+		input {
+			--thumbH: 40px;
+			--color: 48, 100%;
+			--lightness: 88%;
+			--midness: var(--lightness);
+			/*calc(0.37 * var(--lightness));*/
+		}
 
-input[type=range] {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    display: inline-block;
-    padding: 0;
-    margin: 0;
-    height: var(--thumbH);
-    width: 100%;
-    border-radius: calc(var(--thumbH) / 2);
-    background-color: hsla(0,100%,100%,0.3);
-    pointer-events: none;
-}
+		input[type=range] {
+			-webkit-appearance: none;
+			-moz-appearance: none;
+			display: inline-block;
+			padding: 0;
+			margin: 0;
+			height: var(--thumbH);
+			width: 100%;
+			border-radius: calc(var(--thumbH) / 2);
+			background-color: hsla(0, 100%, 100%, 0.3);
+			pointer-events: none;
+		}
 
-input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    background-color: hsl(var(--color), var(--lightness));
-    opacity: 1.7;
-    height: var(--thumbH);
-    margin-bottom: 0px;
-    width: var(--thumbH);
-    border: calc(0.1 * var(--thumbH)) solid;
-    border-color: var(--backcolor);
-    border-radius: calc(var(--thumbH) / 2);
-    pointer-events: auto;
-}
+		input[type=range]::-webkit-slider-thumb {
+			-webkit-appearance: none;
+			background-color: hsl(var(--color), var(--lightness));
+			opacity: 1.7;
+			height: var(--thumbH);
+			margin-bottom: 0px;
+			width: var(--thumbH);
+			border: calc(0.1 * var(--thumbH)) solid;
+			border-color: var(--backcolor);
+			border-radius: calc(var(--thumbH) / 2);
+			pointer-events: auto;
+		}
 
-input[type=range]:focus {
-    outline: none;
-}
+		input[type=range]:focus {
+			outline: none;
+		}
 
-/*possibly a portrait mobi-fone*/
-@media screen and (max-width:500px) {
-    
-    input {
-        --thumbH: 30px;
-    }
-    
-    dd {
-        font-size: 16px;
-        margin-left: 20px;
-    }
-    
-}
-  
-/*possibly a mobile landscaper*/
-@media screen and (orientation: landscape) and (max-width: 760px) {
-    
-    #holder {
-        height: 500px;
-        width: 100%;
-        max-width: none;
-    }
-      
-}
+		/*possibly a portrait mobi-fone*/
+		@media screen and (max-width:500px) {
 
-</style>
-<style id="svgStyles">
+			input {
+				--thumbH: 30px;
+			}
 
-svg {
-    width: 100%;
-    padding: 0;
-    margin: 0;
-}
+			dd {
+				font-size: 16px;
+				margin-left: 20px;
+			}
 
-#svgHolder {
-    border: 10px solid hsla(0,100%,100%,0.3);
-    position: relative;
-    padding: 0;
-    margin: 0;
-    width: 100%;
-    padding-top: calc(40% - 7px);
-    overflow: hidden;
-    user-select: none;
-    --line-width: 2;
-    --line-color: 'purple';
-    --axis-width: 1;
-    --axis-color: #e90;
-    --ani-color: #c30;
-    --dot-color: var(--color);
-    --mass-color: #e90;
-    --mass-stroke: #c70;
-    --mass-stroke-width: 5;
-    --mass-line-width: 0.4;
-    --mass-line-color: purple;
-    --load-ball-color: #e90;
-    --load-ball-stroke: #c70;
-}
+		}
 
-#gravLox {
-    position: absolute;
-    right: 0px;
-    bottom: 0px;
-    padding: 2px;
-    opacity: 0.3;
-    font-style: italic;
-    font-size: 20px;
-    color: var(--axis-color);
-    user-select: none;
-}
+		/*possibly a mobile landscaper*/
+		@media screen and (orientation: landscape) and (max-width: 760px) {
 
-#menu {
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    background-color: rgba(0,0,0,0.3);
-    overflow: hidden;
-    visibility: hidden;
-    transition: height linear 250ms;
-}
-    
-input[type=checkbox] {
-    
-    width: 30px;
-    height: 30px;
-    vertical-align: middle;
-    accent-color: var(--axis-color);
-    
-}
+			#holder {
+				height: 500px;
+				width: 100%;
+				max-width: none;
+			}
 
-label {
-    font-style: italic;
-}
+		}
+	</style>
+	<style id="svgStyles">
+		svg {
+			width: 100%;
+			padding: 0;
+			margin: 0;
+		}
 
-#svgGrid {
-    padding: 0; margin: 0;
-    position: absolute;
-    top:0;
-    overflow: visible;
-    xxxtransform: perspective(400px) rotateX(75deg);
-    z-index:-1;
-    user-select: none;
-}
+		#svgHolder {
+			border: 10px solid hsla(0, 100%, 100%, 0.3);
+			position: relative;
+			padding: 0;
+			margin: 0;
+			width: 100%;
+			padding-top: calc(40% - 7px);
+			overflow: hidden;
+			user-select: none;
+			--line-width: 2;
+			--line-color: 'purple';
+			--axis-width: 1;
+			--axis-color: #e90;
+			--ani-color: #c30;
+			--dot-color: var(--color);
+			--mass-color: #e90;
+			--mass-stroke: #c70;
+			--mass-stroke-width: 5;
+			--mass-line-width: 0.4;
+			--mass-line-color: purple;
+			--load-ball-color: #e90;
+			--load-ball-stroke: #c70;
+		}
 
-#svgMass {
-    padding: 0; margin: 0;
-    top:0;
-    position: absolute;
-    xxxtransform: perspective(400px) rotateX(-15deg);
-    xxxoverflow hidden;
-    user-select: none;
-}
+		#gravLox {
+			position: absolute;
+			right: 0px;
+			bottom: 0px;
+			padding: 2px;
+			opacity: 0.3;
+			font-style: italic;
+			font-size: 20px;
+			color: var(--axis-color);
+			user-select: none;
+		}
 
-.gridline {
-    stroke-width: var(--line-width);
-    stroke: var(--line-color);
-    stroke-linecap: round;
-    fill: none;
-    pointer-events: stroke;
-    vector-effect: non-scaling-stroke;
-    xxxtransition: opacity 1s linear;
-}
+		#menu {
+			position: absolute;
+			top: 0px;
+			right: 0px;
+			background-color: rgba(0, 0, 0, 0.3);
+			overflow: hidden;
+			visibility: hidden;
+			transition: height linear 250ms;
+		}
 
-.xlineDots {
-    marker-start: url(#dot);
-    marker-mid: url(#dot);
-    marker-end: url(#dot);
-}
+		input[type=checkbox] {
 
-.xline {
-    
-}
+			width: 30px;
+			height: 30px;
+			vertical-align: middle;
+			accent-color: var(--axis-color);
 
-.yline {
-    
-}
+		}
 
-.axisline {
-    fill: none;
-    stroke: var(--axis-color);
-    stroke-width: var(--axis-width);
-    vector-effect: non-scaling-stroke;
-}
+		label {
+			font-style: italic;
+		}
 
-.aniline {
-    stroke-dasharray: 10 4;
-    stroke-dashoffset: 0;
-    animation: move-grid-line 0.5s linear infinite;
-}
+		#svgGrid {
+			padding: 0;
+			margin: 0;
+			position: absolute;
+			top: 0;
+			overflow: visible;
+			xxxtransform: perspective(400px) rotateX(75deg);
+			z-index: -1;
+			user-select: none;
+		}
 
-#loadball {
-    fill: var(--load-ball-color);
-    stroke : var(--load-ball-stroke);
-    stroke-width: 10;
-    vector-effect: non-scaling-stroke;
-}
+		#svgMass {
+			padding: 0;
+			margin: 0;
+			top: 0;
+			position: absolute;
+			xxxtransform: perspective(400px) rotateX(-15deg);
+			xxxoverflow hidden;
+			user-select: none;
+		}
 
-.massdot {
-    fill: var(--mass-color);
-    stroke: none;
-}
+		.gridline {
+			stroke-width: var(--line-width);
+			stroke: var(--line-color);
+			stroke-linecap: round;
+			fill: none;
+			pointer-events: stroke;
+			vector-effect: non-scaling-stroke;
+			xxxtransition: opacity 1s linear;
+		}
 
-#massouts {
-    transition: opacity 1s linear;
-}
+		.xlineDots {
+			marker-start: url(#dot);
+			marker-mid: url(#dot);
+			marker-end: url(#dot);
+		}
 
-.massout {
-    fill: none;
-    stroke : var(--mass-stroke);
-    stroke-width: var(--mass-stroke-width);
-    vector-effect: non-scaling-stroke;
-}
+		.xline {}
 
-.massline {
-    fill: none;
-    stroke: var(--mass-line-color);
-    stroke-width: var(--mass-line-width);
-    vector-effect: non-scaling-stroke;
-    xxxstroke-dasharray: 5 1;
-    xxxstroke-dashoffset: 0;
-    xxxanimation: move-mass-line 2s linear infinite;
-    transition: opacity 1s linear;
-}
+		.yline {}
 
-@keyframes move-mass-line {
-    0% { stroke-dashoffset: 0; }
-    100% { stroke-dashoffset: -6; }
-}
+		.axisline {
+			fill: none;
+			stroke: var(--axis-color);
+			stroke-width: var(--axis-width);
+			vector-effect: non-scaling-stroke;
+		}
 
-@keyframes move-grid-line {
-    0% { stroke-dashoffset: 0; }
-    100% { stroke-dashoffset: -14; }
-}
+		.aniline {
+			stroke-dasharray: 10 4;
+			stroke-dashoffset: 0;
+			animation: move-grid-line 0.5s linear infinite;
+		}
 
-/*possibly a portrait mobi-fone*/
-@media screen and (max-width:500px) {
-    
-    #svgHolder {
-        border-width: 2px;
-    }
-      
-}
+		#loadball {
+			fill: var(--load-ball-color);
+			stroke: var(--load-ball-stroke);
+			stroke-width: 10;
+			vector-effect: non-scaling-stroke;
+		}
 
-</style>
-<style id="mathStyles">
-/* (c) Aardvark Aaronson */
+		.massdot {
+			fill: var(--mass-color);
+			stroke: none;
+		}
 
-frac {
-    display: inline-grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1fr;
-    font-style: italic;
-    font-size: 0.6em;
-    vertical-align: middle;
-    text-align: center;
-}
+		#massouts {
+			transition: opacity 1s linear;
+		}
 
-num { border-bottom: 1px solid; }
-num::before {content: "\00a0\00a0"; }
-num::after {content: "\00a0\00a0"; }
+		.massout {
+			fill: none;
+			stroke: var(--mass-stroke);
+			stroke-width: var(--mass-stroke-width);
+			vector-effect: non-scaling-stroke;
+		}
 
-sup { font-size: 0.6em; }
-sub { font-size: 0.6em; }
+		.massline {
+			fill: none;
+			stroke: var(--mass-line-color);
+			stroke-width: var(--mass-line-width);
+			vector-effect: non-scaling-stroke;
+			xxxstroke-dasharray: 5 1;
+			xxxstroke-dashoffset: 0;
+			xxxanimation: move-mass-line 2s linear infinite;
+			transition: opacity 1s linear;
+		}
 
-com { font-size: 0.5em; }
-com::before{ content: "\00a0\00a0\00a0["; }
-com::after{ content: "]"; }
+		@keyframes move-mass-line {
+			0% {
+				stroke-dashoffset: 0;
+			}
+			100% {
+				stroke-dashoffset: -6;
+			}
+		}
 
-whr {
-    border-left: 1px solid;
-    padding: 0.5em;
-    margin-left: 1.25em;
-    font-size: 0.7em;
-    vertical-align: middle;
-}
+		@keyframes move-grid-line {
+			0% {
+				stroke-dashoffset: 0;
+			}
+			100% {
+				stroke-dashoffset: -14;
+			}
+		}
 
-dd { margin-top: 15px; }
+		/*possibly a portrait mobi-fone*/
+		@media screen and (max-width:500px) {
 
-</style>
+			#svgHolder {
+				border-width: 2px;
+			}
+
+		}
+	</style>
+	<style id="mathStyles">
+		/* (c) Aardvark Aaronson */
+
+		frac {
+			display: inline-grid;
+			grid-template-columns: 1fr;
+			grid-template-rows: 1fr 1fr;
+			font-style: italic;
+			font-size: 0.6em;
+			vertical-align: middle;
+			text-align: center;
+		}
+
+		num {
+			border-bottom: 1px solid;
+		}
+
+		num::before {
+			content: "\00a0\00a0";
+		}
+
+		num::after {
+			content: "\00a0\00a0";
+		}
+
+		sup {
+			font-size: 0.6em;
+		}
+
+		sub {
+			font-size: 0.6em;
+		}
+
+		com {
+			font-size: 0.5em;
+		}
+
+		com::before {
+			content: "\00a0\00a0\00a0[";
+		}
+
+		com::after {
+			content: "]";
+		}
+
+		whr {
+			border-left: 1px solid;
+			padding: 0.5em;
+			margin-left: 1.25em;
+			font-size: 0.7em;
+			vertical-align: middle;
+		}
+
+		dd {
+			margin-top: 15px;
+		}
+	</style>
 </head>
 
 <body>
-<div id="holder">
-    
-    <div id="svgHolder">
-        
-        <div id="gravLox">grav&middot;LoX</div>
-         
-        <div id="menu"><div style="padding:10px;">
-            <input id="checkbox0" type="checkbox">
+	<div id="holder">
+
+		<div id="svgHolder">
+
+			<div id="gravLox">grav&middot;LoX</div>
+
+			<div id="menu">
+				<div style="padding:10px;">
+					<input id="checkbox0" type="checkbox">
             <label id="label0" for="checkbox0">hide grid</label>
             <br>
             <input id="checkbox1" type="checkbox">
